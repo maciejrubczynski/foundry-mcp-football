@@ -26,7 +26,7 @@ MCP_SERVER_URL = os.environ.get(
     "https://<your-function-app>.azurewebsites.net/runtime/webhooks/mcp",
 )
 MCP_SERVER_KEY = os.environ.get("MCP_SERVER_KEY")  # Required: mcp_extension system key
-MODEL = "gpt-4.1-mini"
+MODEL = "gpt-5-mini"
 
 
 def main():

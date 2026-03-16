@@ -1,6 +1,6 @@
 # MCP Server + Foundry Agent: Football Statistics
 
-A complete tutorial showing how to build a custom **MCP (Model Context Protocol) server** on **Azure Functions** and connect it to a **Microsoft Foundry Agent** powered by GPT-4.1-mini.
+A complete tutorial showing how to build a custom **MCP (Model Context Protocol) server** on **Azure Functions** and connect it to a **Microsoft Foundry Agent** powered by GPT-5-mini.
 
 ## What You'll Build
 
@@ -59,7 +59,7 @@ Read the full step-by-step tutorial: **[Building an MCP Server + Foundry Agent](
 - **Azure Functions** with MCP extension (Preview bundle 4.32.0+)
 - **azure-functions 1.25.0b3** (beta, required for `@app.mcp_tool()` decorators)
 - **azure-ai-projects v2 SDK** (`MCPTool`, `PromptAgentDefinition`, Conversations API)
-- **GPT-4.1-mini** via Microsoft Foundry
+- **GPT-5-mini** via Microsoft Foundry
 - **MCP (Model Context Protocol)** — Streamable HTTP transport
 
 ## License

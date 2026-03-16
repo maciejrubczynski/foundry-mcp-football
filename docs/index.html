@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Deploy a custom MCP server on Azure Functions, connect it to a Foundry Agent with gpt-4.1-mini, and query football player data using natural language">
+    <meta name="description" content="Deploy a custom MCP server on Azure Functions, connect it to a Foundry Agent with gpt-5-mini, and query football player data using natural language">
     <meta name="author" content="Maciej Rubczyński">
     <meta property="og:title" content="Build a Football Stats MCP Server with Azure Functions + Foundry Agent">
-    <meta property="og:description" content="Deploy a custom MCP server on Azure Functions, connect it to a Foundry Agent with gpt-4.1-mini, and query football player data using natural language">
+    <meta property="og:description" content="Deploy a custom MCP server on Azure Functions, connect it to a Foundry Agent with gpt-5-mini, and query football player data using natural language">
     <meta property="og:type" content="article">
     <title>Build a Football Stats MCP Server with Azure Functions + Foundry Agent</title>
     <style>
@@ -382,7 +382,7 @@
     <header class="article-hero">
         <div class="category">Azure AI Tutorial</div>
         <h1>Build a Football Stats MCP Server with Azure Functions + Foundry Agent</h1>
-        <p class="subtitle">Deploy a custom MCP server on Azure Functions, connect it to a Foundry Agent with gpt-4.1-mini, and query football player data using natural language</p>
+        <p class="subtitle">Deploy a custom MCP server on Azure Functions, connect it to a Foundry Agent with gpt-5-mini, and query football player data using natural language</p>
         <div class="article-meta">
             <span>Maciej Rubczyński</span>
             <span>March 16, 2026</span>
@@ -412,7 +412,7 @@
         <!-- ARTICLE CONTENT -->
 
         <h2 id="introduction">Introduction</h2>
-        <p>In this tutorial, we'll build a complete end-to-end AI agent system that understands football (soccer) statistics. Here's what makes this powerful: we're creating a custom <strong>MCP server</strong> deployed to Azure Functions, then connecting it to a <strong>Foundry Agent</strong> powered by OpenAI's gpt-4.1-mini model. The agent can search players, retrieve detailed statistics, and compare players directly using natural language—no SQL queries, no complex APIs to learn.</p>
+        <p>In this tutorial, we'll build a complete end-to-end AI agent system that understands football (soccer) statistics. Here's what makes this powerful: we're creating a custom <strong>MCP server</strong> deployed to Azure Functions, then connecting it to a <strong>Foundry Agent</strong> powered by OpenAI's gpt-5-mini model. The agent can search players, retrieve detailed statistics, and compare players directly using natural language—no SQL queries, no complex APIs to learn.</p>
         <p>By the end of this tutorial, you'll understand how to:</p>
         <ul>
             <li>Build an MCP server as Azure Functions using Python</li>
@@ -444,7 +444,7 @@
         </ul>
 
         <p><strong>Component 2: Foundry Agent Service</strong><br>
-        Runs gpt-4.1-mini and orchestrates tool calls. It:
+        Runs gpt-5-mini and orchestrates tool calls. It:
         </p>
         <ul>
             <li>Receives natural language queries from users</li>
@@ -459,7 +459,7 @@
         <pre><code>User Query
     |
     v
-[Foundry Agent | gpt-4.1-mini]
+[Foundry Agent | gpt-5-mini]
     |
     | (decides to call MCP tools)
     v
@@ -504,7 +504,7 @@
   --yes</code></pre>
 
         <h3>Create a Foundry Project</h3>
-        <p>Visit the <a href="https://ai.azure.com/" target="_blank">Azure AI Foundry portal</a>, log in, and create a new project named <code>mcp-football-agent</code>. Then deploy the <code>gpt-4.1-mini</code> model to your project.</p>
+        <p>Visit the <a href="https://ai.azure.com/" target="_blank">Azure AI Foundry portal</a>, log in, and create a new project named <code>mcp-football-agent</code>. Then deploy the <code>gpt-5-mini</code> model to your project.</p>
 
         <h3>Create the Function App</h3>
         <pre><code>az storage account create \
@@ -829,7 +829,7 @@ from azure.ai.projects.models import MCPTool, PromptAgentDefinition
 FOUNDRY_ENDPOINT = &quot;https://foundry-mcp-tutorial.services.ai.azure.com/api/projects/mcp-football-agent&quot;
 MCP_SERVER_URL = &quot;https://func-mcp-football.azurewebsites.net/runtime/webhooks/mcp&quot;
 MCP_SERVER_KEY = os.getenv(&quot;MCP_SERVER_KEY&quot;)  # Set as environment variable
-MODEL = &quot;gpt-4.1-mini&quot;
+MODEL = &quot;gpt-5-mini&quot;
 
 if not MCP_SERVER_KEY:
     raise ValueError(&quot;MCP_SERVER_KEY environment variable not set&quot;)
@@ -1071,7 +1071,7 @@ sustained excellence over a decade.</code></pre>
                 <span class="tag">AI Agents</span>
                 <span class="tag">Python</span>
                 <span class="tag">Football</span>
-                <span class="tag">gpt-4.1-mini</span>
+                <span class="tag">gpt-5-mini</span>
             </div>
         </footer>
     </main>
