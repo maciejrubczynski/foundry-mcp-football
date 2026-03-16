@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Deploy a custom MCP server on Azure Functions, connect it to a Foundry Agent with gpt-4.1-mini, and query football player data using natural language">
+    <meta name="author" content="Maciej Rubczyński">
+    <meta property="og:title" content="Build a Football Stats MCP Server with Azure Functions + Foundry Agent">
+    <meta property="og:description" content="Deploy a custom MCP server on Azure Functions, connect it to a Foundry Agent with gpt-4.1-mini, and query football player data using natural language">
+    <meta property="og:type" content="article">
+    <title>Build a Football Stats MCP Server with Azure Functions + Foundry Agent</title>
+    <style>
+        /* Reset and base */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --color-bg: #ffffff;
+            --color-text: #1a1a2e;
+            --color-text-secondary: #555770;
+            --color-accent: #0078d4;
+            --color-accent-light: #e8f4fd;
+            --color-border: #e2e4e9;
+            --color-code-bg: #f6f8fa;
+            --color-callout-bg: #fff8e1;
+            --color-callout-border: #ffb300;
+            --color-tip-bg: #e8f5e9;
+            --color-tip-border: #43a047;
+            --color-warning-bg: #fce4ec;
+            --color-warning-border: #e53935;
+            --font-body: 'Segoe UI', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+            --max-width: 780px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--color-text);
+            background: var(--color-bg);
+            line-height: 1.7;
+            font-size: 17px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Header / Hero */
+        .article-hero {
+            background: linear-gradient(135deg, #0078d4 0%, #005a9e 50%, #003f72 100%);
+            color: white;
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+        }
+
+        .article-hero .category {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 1.25rem;
+        }
+
+        .article-hero h1 {
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            font-weight: 700;
+            line-height: 1.2;
+            max-width: 700px;
+            margin: 0 auto 1.25rem;
+        }
+
+        .article-hero .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+            line-height: 1.5;
+        }
+
+        .article-meta {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            opacity: 0.85;
+            flex-wrap: wrap;
+        }
+
+        .article-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        /* Main content */
+        .article-container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 4rem;
+        }
+
+        /* Typography */
+        .article-container h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 2.5rem 0 1rem;
+            color: var(--color-text);
+            border-bottom: 2px solid var(--color-accent);
+            padding-bottom: 0.4rem;
+        }
+
+        .article-container h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 2rem 0 0.75rem;
+            color: var(--color-text);
+        }
+
+        .article-container p {
+            margin-bottom: 1.25rem;
+        }
+
+        .article-container a {
+            color: var(--color-accent);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .article-container a:hover {
+            border-bottom-color: var(--color-accent);
+        }
+
+        /* Lists */
+        .article-container ul, .article-container ol {
+            margin: 0 0 1.25rem 1.5rem;
+        }
+
+        .article-container li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Images / Screenshots */
+        .article-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid var(--color-border);
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .screenshot-wrapper {
+            margin: 1.75rem 0;
+            text-align: center;
+        }
+
+        .screenshot-wrapper img {
+            margin: 0 0 0.5rem;
+        }
+
+        .screenshot-wrapper .caption {
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+            font-style: italic;
+        }
+
+        /* Code blocks */
+        pre {
+            background: var(--color-code-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        pre code {
+            font-family: var(--font-mono);
+            background: none;
+            padding: 0;
+            border-radius: 0;
+            font-size: inherit;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            background: var(--color-code-bg);
+            padding: 0.15em 0.4em;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        /* Callout boxes */
+        .callout {
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+        }
+
+        .callout-tip {
+            background: var(--color-tip-bg);
+            border-color: var(--color-tip-border);
+        }
+
+        .callout-warning {
+            background: var(--color-warning-bg);
+            border-color: var(--color-warning-border);
+        }
+
+        .callout-note {
+            background: var(--color-callout-bg);
+            border-color: var(--color-callout-border);
+        }
+
+        .callout-title {
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+            font-size: 0.95rem;
+        }
+
+        .callout p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Step-by-step */
+        .steps {
+            counter-reset: step-counter;
+            list-style: none;
+            margin-left: 0;
+            padding-left: 0;
+        }
+
+        .steps li {
+            counter-increment: step-counter;
+            position: relative;
+            padding-left: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2rem;
+            height: 2rem;
+            background: var(--color-accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        /* Table of contents */
+        .toc {
+            background: var(--color-code-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 1.25rem 1.5rem;
+            margin: 0 0 2.5rem;
+        }
+
+        .toc-title {
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .toc li {
+            margin-bottom: 0.4rem;
+        }
+
+        .toc a {
+            color: var(--color-accent);
+            font-size: 0.95rem;
+        }
+
+        /* References section */
+        .references {
+            background: var(--color-code-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+        }
+
+        .references h2 {
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--color-accent);
+            padding-bottom: 0.4rem;
+            margin: 0 0 1rem;
+        }
+
+        .references ol {
+            margin: 0;
+            padding-left: 1.25rem;
+        }
+
+        .references li {
+            margin-bottom: 0.6rem;
+            font-size: 0.92rem;
+            line-height: 1.5;
+        }
+
+        .references li a {
+            color: var(--color-accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .references li a:hover {
+            text-decoration: underline;
+        }
+
+        .references .source-type {
+            display: inline-block;
+            background: var(--color-accent-light);
+            color: var(--color-accent);
+            padding: 0.1rem 0.45rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.35rem;
+            vertical-align: middle;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .references .source-desc {
+            color: var(--color-text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Footer */
+        .article-footer {
+            border-top: 1px solid var(--color-border);
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+        }
+
+        .article-footer .tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+
+        .article-footer .tag {
+            background: var(--color-accent-light);
+            color: var(--color-accent);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .article-hero { padding: 2.5rem 1.25rem 2rem; }
+            .article-container { padding: 1.5rem 1rem 3rem; }
+            .article-meta { flex-direction: column; align-items: center; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="article-hero">
+        <div class="category">Azure AI Tutorial</div>
+        <h1>Build a Football Stats MCP Server with Azure Functions + Foundry Agent</h1>
+        <p class="subtitle">Deploy a custom MCP server on Azure Functions, connect it to a Foundry Agent with gpt-4.1-mini, and query football player data using natural language</p>
+        <div class="article-meta">
+            <span>Maciej Rubczyński</span>
+            <span>March 16, 2026</span>
+            <span>12 min read</span>
+        </div>
+    </header>
+
+    <main class="article-container">
+        <!-- TABLE OF CONTENTS -->
+        <div class="toc">
+            <div class="toc-title">Table of Contents</div>
+            <ul>
+                <li><a href="#introduction">Introduction</a></li>
+                <li><a href="#what-is-mcp">What is MCP?</a></li>
+                <li><a href="#architecture">Architecture Overview</a></li>
+                <li><a href="#prerequisites">Prerequisites</a></li>
+                <li><a href="#step-1">Step 1: Create Azure Resources</a></li>
+                <li><a href="#step-2">Step 2: Build the MCP Server</a></li>
+                <li><a href="#step-3">Step 3: Deploy to Azure Functions</a></li>
+                <li><a href="#step-4">Step 4: Create the Foundry Agent</a></li>
+                <li><a href="#step-5">Step 5: Test the Agent</a></li>
+                <li><a href="#takeaways">Key Takeaways</a></li>
+                <li><a href="#next-steps">Next Steps</a></li>
+            </ul>
+        </div>
+
+        <!-- ARTICLE CONTENT -->
+
+        <h2 id="introduction">Introduction</h2>
+        <p>In this tutorial, we'll build a complete end-to-end AI agent system that understands football (soccer) statistics. Here's what makes this powerful: we're creating a custom <strong>MCP server</strong> deployed to Azure Functions, then connecting it to a <strong>Foundry Agent</strong> powered by OpenAI's gpt-4.1-mini model. The agent can search players, retrieve detailed statistics, and compare players directly using natural language—no SQL queries, no complex APIs to learn.</p>
+        <p>By the end of this tutorial, you'll understand how to:</p>
+        <ul>
+            <li>Build an MCP server as Azure Functions using Python</li>
+            <li>Deploy it securely and expose it as callable tools</li>
+            <li>Create a Foundry Agent that combines the model with your custom tools</li>
+            <li>Have a natural language interface to your proprietary data</li>
+        </ul>
+        <p>This pattern works for any domain: HR databases, sales pipelines, inventory systems, or internal knowledge bases. Let's build something real.</p>
+
+        <h2 id="what-is-mcp">What is MCP?</h2>
+        <p><strong>Model Context Protocol (MCP)</strong> is an open standard that defines how AI models interact with external tools and data sources. Think of it as a universal adapter between large language models and your applications.</p>
+        <p>Instead of building custom integrations for each model (OpenAI, Anthropic, Google, etc.), you define your tools once following the MCP spec, and any MCP-compatible model can use them. Azure Functions now has first-class support for MCP through the <strong>MCP tool trigger binding</strong>, which lets you expose Python functions as MCP tools with just a decorator.</p>
+
+        <div class="callout callout-tip">
+            <div class="callout-title">Why MCP on Azure Functions?</div>
+            <p>Azure Functions handles scaling, authentication, and monitoring. You write your Python business logic; Functions and the MCP extension handle the protocol, making your functions instantly available to any MCP client including Foundry Agents.</p>
+        </div>
+
+        <h2 id="architecture">Architecture Overview</h2>
+        <p>Our system has three main components:</p>
+
+        <p><strong>Component 1: MCP Server (Azure Functions)</strong><br>
+        Hosts three Python functions decorated as MCP tools:
+        </p>
+        <ul>
+            <li><code>search_players</code> - Search by name, nationality, position, or club</li>
+            <li><code>get_player_stats</code> - Retrieve season and career stats</li>
+            <li><code>compare_players</code> - Compare two players side-by-side</li>
+        </ul>
+
+        <p><strong>Component 2: Foundry Agent Service</strong><br>
+        Runs gpt-4.1-mini and orchestrates tool calls. It:
+        </p>
+        <ul>
+            <li>Receives natural language queries from users</li>
+            <li>Decides which MCP tools to call (if any)</li>
+            <li>Executes the MCP tools via HTTP to your Azure Functions</li>
+            <li>Synthesizes results into a natural language response</li>
+        </ul>
+
+        <p><strong>Component 3: Client (Python SDK)</strong><br>
+        Uses <code>azure-ai-projects</code> SDK v2 to create agents, manage conversations, and invoke the agent with user queries.</p>
+
+        <pre><code>User Query
+    |
+    v
+[Foundry Agent | gpt-4.1-mini]
+    |
+    | (decides to call MCP tools)
+    v
+[MCP Dispatcher]
+    |
+    v
+[Azure Functions MCP Server]
+ - search_players
+ - get_player_stats
+ - compare_players
+    |
+    v
+[Response back to Agent]
+    |
+    v
+[Natural Language Answer to User]</code></pre>
+
+        <h2 id="prerequisites">Prerequisites</h2>
+        <ul>
+            <li><strong>Azure subscription</strong> (free trial is fine)</li>
+            <li><strong>Azure CLI</strong> installed locally</li>
+            <li><strong>Python 3.10+</strong> and pip</li>
+            <li><strong>GitHub account</strong> (for cloning samples, optional)</li>
+            <li>Basic familiarity with Python and command line</li>
+        </ul>
+
+        <h2 id="step-1">Step 1: Create Azure Resources</h2>
+        <p>We'll create a resource group, Foundry workspace, and Function App using the Azure CLI.</p>
+
+        <h3>Create the Resource Group</h3>
+        <pre><code>az group create \
+  --name rg-foundry-mcp-tutorial \
+  --location eastus</code></pre>
+
+        <h3>Create a Foundry Workspace</h3>
+        <pre><code>az cognitiveservices account create \
+  --resource-group rg-foundry-mcp-tutorial \
+  --name foundry-mcp-tutorial \
+  --kind AIServices \
+  --sku s0 \
+  --location eastus \
+  --yes</code></pre>
+
+        <h3>Create a Foundry Project</h3>
+        <p>Visit the <a href="https://ai.azure.com/" target="_blank">Azure AI Foundry portal</a>, log in, and create a new project named <code>mcp-football-agent</code>. Then deploy the <code>gpt-4.1-mini</code> model to your project.</p>
+
+        <h3>Create the Function App</h3>
+        <pre><code>az storage account create \
+  --resource-group rg-foundry-mcp-tutorial \
+  --name stmcpfootball01 \
+  --location eastus \
+  --sku Standard_LRS
+
+az functionapp create \
+  --resource-group rg-foundry-mcp-tutorial \
+  --consumption-plan-location eastus \
+  --runtime python \
+  --runtime-version 3.11 \
+  --functions-version 4 \
+  --name func-mcp-football \
+  --storage-account stmcpfootball01</code></pre>
+
+        <div class="callout callout-note">
+            <div class="callout-title">Note: Consumption Plan</div>
+            <p>The Consumption plan scales automatically and you pay only for executions. Perfect for development and low-traffic scenarios.</p>
+        </div>
+
+        <h2 id="step-2">Step 2: Build the MCP Server</h2>
+        <p>Now we'll write the Python code for our MCP server. Create a local directory and set up your function app.</p>
+
+        <h3>Initialize the Function App Locally</h3>
+        <pre><code>func init football-mcp-server --python
+cd football-mcp-server
+func new --name football_stats --template "HTTP trigger"</code></pre>
+
+        <h3>Install Dependencies</h3>
+        <p>Create <code>requirements.txt</code>:</p>
+        <pre><code>azure-functions==1.25.0b3
+azure-functions-mcp-extension==0.1.0</code></pre>
+
+        <p>Install them:</p>
+        <pre><code>pip install -r requirements.txt</code></pre>
+
+        <h3>Create function_app.py</h3>
+        <p>Replace the generated files with this complete implementation:</p>
+        <pre><code>&quot;&quot;&quot;
+MCP Server for Football (Soccer) Statistics
+Deployed as Azure Functions with MCP extension bindings.
+&quot;&quot;&quot;
+import logging
+import azure.functions as func
+import json
+
+app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
+
+PLAYERS = {
+    &quot;lewandowski&quot;: {
+        &quot;id&quot;: &quot;lew9&quot;, &quot;name&quot;: &quot;Robert Lewandowski&quot;,
+        &quot;nationality&quot;: &quot;Poland&quot;, &quot;position&quot;: &quot;Striker&quot;,
+        &quot;club&quot;: &quot;FC Barcelona&quot;, &quot;age&quot;: 37,
+        &quot;stats&quot;: {
+            &quot;season&quot;: &quot;2025/26&quot;, &quot;appearances&quot;: 28, &quot;goals&quot;: 19,
+            &quot;assists&quot;: 5, &quot;minutes_played&quot;: 2340, &quot;goals_per_90&quot;: 0.73,
+            &quot;shots_on_target_pct&quot;: 52.1, &quot;pass_accuracy&quot;: 81.3,
+            &quot;career_goals&quot;: 672, &quot;career_assists&quot;: 171,
+        },
+    },
+    &quot;mbappe&quot;: {
+        &quot;id&quot;: &quot;mba7&quot;, &quot;name&quot;: &quot;Kylian Mbappé&quot;,
+        &quot;nationality&quot;: &quot;France&quot;, &quot;position&quot;: &quot;Forward&quot;,
+        &quot;club&quot;: &quot;Real Madrid&quot;, &quot;age&quot;: 26,
+        &quot;stats&quot;: {
+            &quot;season&quot;: &quot;2025/26&quot;, &quot;appearances&quot;: 25, &quot;goals&quot;: 22,
+            &quot;assists&quot;: 8, &quot;minutes_played&quot;: 2100, &quot;goals_per_90&quot;: 0.94,
+            &quot;shots_on_target_pct&quot;: 58.3, &quot;pass_accuracy&quot;: 79.2,
+            &quot;career_goals&quot;: 286, &quot;career_assists&quot;: 108,
+        },
+    },
+    &quot;haaland&quot;: {
+        &quot;id&quot;: &quot;haa9&quot;, &quot;name&quot;: &quot;Erling Haaland&quot;,
+        &quot;nationality&quot;: &quot;Norway&quot;, &quot;position&quot;: &quot;Striker&quot;,
+        &quot;club&quot;: &quot;Manchester City&quot;, &quot;age&quot;: 25,
+        &quot;stats&quot;: {
+            &quot;season&quot;: &quot;2025/26&quot;, &quot;appearances&quot;: 24, &quot;goals&quot;: 21,
+            &quot;assists&quot;: 4, &quot;minutes_played&quot;: 2016, &quot;goals_per_90&quot;: 0.94,
+            &quot;shots_on_target_pct&quot;: 61.2, &quot;pass_accuracy&quot;: 76.8,
+            &quot;career_goals&quot;: 198, &quot;career_assists&quot;: 52,
+        },
+    },
+    &quot;vinicius&quot;: {
+        &quot;id&quot;: &quot;vin11&quot;, &quot;name&quot;: &quot;Vinícius Júnior&quot;,
+        &quot;nationality&quot;: &quot;Brazil&quot;, &quot;position&quot;: &quot;Winger&quot;,
+        &quot;club&quot;: &quot;Real Madrid&quot;, &quot;age&quot;: 24,
+        &quot;stats&quot;: {
+            &quot;season&quot;: &quot;2025/26&quot;, &quot;appearances&quot;: 26, &quot;goals&quot;: 16,
+            &quot;assists&quot;: 9, &quot;minutes_played&quot;: 2210, &quot;goals_per_90&quot;: 0.65,
+            &quot;shots_on_target_pct&quot;: 54.7, &quot;pass_accuracy&quot;: 82.1,
+            &quot;career_goals&quot;: 112, &quot;career_assists&quot;: 84,
+        },
+    },
+    &quot;salah&quot;: {
+        &quot;id&quot;: &quot;sal11&quot;, &quot;name&quot;: &quot;Mohamed Salah&quot;,
+        &quot;nationality&quot;: &quot;Egypt&quot;, &quot;position&quot;: &quot;Forward&quot;,
+        &quot;club&quot;: &quot;Liverpool FC&quot;, &quot;age&quot;: 33,
+        &quot;stats&quot;: {
+            &quot;season&quot;: &quot;2025/26&quot;, &quot;appearances&quot;: 27, &quot;goals&quot;: 18,
+            &quot;assists&quot;: 7, &quot;minutes_played&quot;: 2250, &quot;goals_per_90&quot;: 0.72,
+            &quot;shots_on_target_pct&quot;: 55.8, &quot;pass_accuracy&quot;: 80.4,
+            &quot;career_goals&quot;: 267, &quot;career_assists&quot;: 123,
+        },
+    },
+    &quot;bellingham&quot;: {
+        &quot;id&quot;: &quot;bel5&quot;, &quot;name&quot;: &quot;Jude Bellingham&quot;,
+        &quot;nationality&quot;: &quot;England&quot;, &quot;position&quot;: &quot;Midfielder&quot;,
+        &quot;club&quot;: &quot;Real Madrid&quot;, &quot;age&quot;: 21,
+        &quot;stats&quot;: {
+            &quot;season&quot;: &quot;2025/26&quot;, &quot;appearances&quot;: 22, &quot;goals&quot;: 8,
+            &quot;assists&quot;: 6, &quot;minutes_played&quot;: 1890, &quot;goals_per_90&quot;: 0.38,
+            &quot;shots_on_target_pct&quot;: 45.2, &quot;pass_accuracy&quot;: 88.7,
+            &quot;career_goals&quot;: 34, &quot;career_assists&quot;: 31,
+        },
+    },
+    &quot;yamal&quot;: {
+        &quot;id&quot;: &quot;yam19&quot;, &quot;name&quot;: &quot;Lamine Yamal&quot;,
+        &quot;nationality&quot;: &quot;Spain&quot;, &quot;position&quot;: &quot;Forward&quot;,
+        &quot;club&quot;: &quot;FC Barcelona&quot;, &quot;age&quot;: 18,
+        &quot;stats&quot;: {
+            &quot;season&quot;: &quot;2025/26&quot;, &quot;appearances&quot;: 20, &quot;goals&quot;: 7,
+            &quot;assists&quot;: 5, &quot;minutes_played&quot;: 1440, &quot;goals_per_90&quot;: 0.44,
+            &quot;shots_on_target_pct&quot;: 48.3, &quot;pass_accuracy&quot;: 84.2,
+            &quot;career_goals&quot;: 12, &quot;career_assists&quot;: 8,
+        },
+    },
+    &quot;szczesny&quot;: {
+        &quot;id&quot;: &quot;szc1&quot;, &quot;name&quot;: &quot;Wojciech Szczęsny&quot;,
+        &quot;nationality&quot;: &quot;Poland&quot;, &quot;position&quot;: &quot;Goalkeeper&quot;,
+        &quot;club&quot;: &quot;FC Barcelona&quot;, &quot;age&quot;: 34,
+        &quot;stats&quot;: {
+            &quot;season&quot;: &quot;2025/26&quot;, &quot;appearances&quot;: 24, &quot;goals&quot;: 0,
+            &quot;assists&quot;: 0, &quot;minutes_played&quot;: 2160, &quot;clean_sheets&quot;: 8,
+            &quot;saves&quot;: 72, &quot;save_percentage&quot;: 78.3, &quot;pass_accuracy&quot;: 71.5,
+            &quot;career_goals&quot;: 0, &quot;career_assists&quot;: 0,
+        },
+    },
+}
+
+@app.mcp_tool()
+@app.mcp_tool_property(
+    arg_name=&quot;query&quot;,
+    description=&quot;Search term: player name, country, position, or club name.&quot;,
+)
+def search_players(query: str) -&gt; str:
+    &quot;&quot;&quot;Search for football players by name, nationality, position, or club.&quot;&quot;&quot;
+    query_lower = query.lower()
+    matches = []
+
+    for key, player in PLAYERS.items():
+        if (query_lower in player.get(&quot;name&quot;, &quot;&quot;).lower() or
+            query_lower in player.get(&quot;nationality&quot;, &quot;&quot;).lower() or
+            query_lower in player.get(&quot;position&quot;, &quot;&quot;).lower() or
+            query_lower in player.get(&quot;club&quot;, &quot;&quot;).lower()):
+            matches.append(player)
+
+    if not matches:
+        return f&quot;No players found matching '{query}'&quot;
+
+    result = f&quot;Found {len(matches)} player(s) matching '{query}':\n\n&quot;
+    for p in matches:
+        result += f&quot;- {p['name']} ({p['nationality']}) - {p['position']} at {p['club']}\n&quot;
+
+    return result
+
+
+@app.mcp_tool()
+@app.mcp_tool_property(
+    arg_name=&quot;player_name&quot;,
+    description=&quot;Full or partial player name.&quot;,
+)
+def get_player_stats(player_name: str) -&gt; str:
+    &quot;&quot;&quot;Get detailed season and career statistics for a specific football player.&quot;&quot;&quot;
+    player_key = None
+    for key, player in PLAYERS.items():
+        if player_name.lower() in player.get(&quot;name&quot;, &quot;&quot;).lower():
+            player_key = key
+            break
+
+    if not player_key:
+        return f&quot;Player '{player_name}' not found.&quot;
+
+    p = PLAYERS[player_key]
+    stats = p.get(&quot;stats&quot;, {})
+
+    result = f&quot;{p['name']} - {p['position']}\n&quot;
+    result += f&quot;Club: {p['club']} | Age: {p['age']} | Nationality: {p['nationality']}\n\n&quot;
+    result += f&quot;Season {stats.get('season', 'N/A')} Stats:\n&quot;
+    result += f&quot;  Appearances: {stats.get('appearances', 'N/A')}\n&quot;
+    result += f&quot;  Goals: {stats.get('goals', 'N/A')}\n&quot;
+    result += f&quot;  Assists: {stats.get('assists', 'N/A')}\n&quot;
+    result += f&quot;  Minutes Played: {stats.get('minutes_played', 'N/A')}\n&quot;
+    result += f&quot;  Goals per 90 min: {stats.get('goals_per_90', 'N/A')}\n&quot;
+    result += f&quot;  Shot Accuracy: {stats.get('shots_on_target_pct', 'N/A')}%\n&quot;
+    result += f&quot;  Pass Accuracy: {stats.get('pass_accuracy', 'N/A')}%\n\n&quot;
+    result += f&quot;Career Stats:\n&quot;
+    result += f&quot;  Total Goals: {stats.get('career_goals', 'N/A')}\n&quot;
+    result += f&quot;  Total Assists: {stats.get('career_assists', 'N/A')}\n&quot;
+
+    return result
+
+
+@app.mcp_tool()
+@app.mcp_tool_property(arg_name=&quot;player1_name&quot;, description=&quot;First player name.&quot;)
+@app.mcp_tool_property(arg_name=&quot;player2_name&quot;, description=&quot;Second player name.&quot;)
+def compare_players(player1_name: str, player2_name: str) -&gt; str:
+    &quot;&quot;&quot;Compare statistics of two football players side-by-side.&quot;&quot;&quot;
+    p1_key = None
+    p2_key = None
+
+    for key, player in PLAYERS.items():
+        if player1_name.lower() in player.get(&quot;name&quot;, &quot;&quot;).lower():
+            p1_key = key
+        if player2_name.lower() in player.get(&quot;name&quot;, &quot;&quot;).lower():
+            p2_key = key
+
+    if not p1_key or not p2_key:
+        return f&quot;Could not find both players: '{player1_name}' and '{player2_name}'&quot;
+
+    p1 = PLAYERS[p1_key]
+    p2 = PLAYERS[p2_key]
+    s1 = p1.get(&quot;stats&quot;, {})
+    s2 = p2.get(&quot;stats&quot;, {})
+
+    result = f&quot;Comparison: {p1['name']} vs {p2['name']}\n\n&quot;
+    result += f&quot;{'Metric':<25} {'':&lt;20} {p1['name']:<20} {p2['name']:<20}\n&quot;
+    result += &quot;-&quot; * 70 + &quot;\n&quot;
+    result += f&quot;{'Position':<25} {p1['position']:<20} {p2['position']:<20}\n&quot;
+    result += f&quot;{'Club':<25} {p1['club']:<20} {p2['club']:<20}\n&quot;
+    result += f&quot;{'Goals (Season)':<25} {s1.get('goals', 'N/A'):<20} {s2.get('goals', 'N/A'):<20}\n&quot;
+    result += f&quot;{'Assists (Season)':<25} {s1.get('assists', 'N/A'):<20} {s2.get('assists', 'N/A'):<20}\n&quot;
+    result += f&quot;{'Goals per 90':<25} {s1.get('goals_per_90', 'N/A'):<20} {s2.get('goals_per_90', 'N/A'):<20}\n&quot;
+    result += f&quot;{'Pass Accuracy':<25} {s1.get('pass_accuracy', 'N/A')}%{'':&lt;17} {s2.get('pass_accuracy', 'N/A')}%\n&quot;
+    result += f&quot;{'Career Goals':<25} {s1.get('career_goals', 'N/A'):<20} {s2.get('career_goals', 'N/A'):<20}\n&quot;
+
+    return result</code></pre>
+
+        <h3>Create host.json</h3>
+        <p>Ensure your <code>host.json</code> includes the Preview extension bundle for MCP support:</p>
+        <pre><code>{
+  &quot;version&quot;: &quot;2.0&quot;,
+  &quot;logging&quot;: {
+    &quot;applicationInsights&quot;: {
+      &quot;samplingSettings&quot;: {
+        &quot;isEnabled&quot;: true,
+        &quot;maxTelemetryItemsPerSecond&quot;: 20
+      }
+    }
+  },
+  &quot;extensionBundle&quot;: {
+    &quot;id&quot;: &quot;Microsoft.Azure.Functions.ExtensionBundle.Preview&quot;,
+    &quot;version&quot;: &quot;[4.*, 5.0.0)&quot;
+  }
+}</code></pre>
+
+        <div class="callout callout-warning">
+            <div class="callout-title">Important: Extension Bundle Version</div>
+            <p>The MCP tool trigger requires the Preview extension bundle. Using the standard bundle will not include MCP support.</p>
+        </div>
+
+        <h2 id="step-3">Step 3: Deploy to Azure Functions</h2>
+        <p>Now we'll package and deploy your function app to Azure.</p>
+
+        <h3>Deploy via ZIP</h3>
+        <pre><code>func azure functionapp publish func-mcp-football --build remote</code></pre>
+
+        <p>This command uploads your code and builds it in Azure. The process takes 2-3 minutes.</p>
+
+        <h3>Verify the Deployment</h3>
+        <p>Check that your functions were deployed:</p>
+        <pre><code>az functionapp function list \
+  --resource-group rg-foundry-mcp-tutorial \
+  --name func-mcp-football</code></pre>
+
+        <p>You should see three functions: <code>search_players</code>, <code>get_player_stats</code>, and <code>compare_players</code>, all with the <code>mcpToolTrigger</code> binding.</p>
+
+        <h3>Get Your Function URL and Key</h3>
+        <pre><code>az functionapp keys list \
+  --resource-group rg-foundry-mcp-tutorial \
+  --name func-mcp-football \
+  --query "functionKeys"</code></pre>
+
+        <p>The MCP endpoint is available at:</p>
+        <pre><code>https://func-mcp-football.azurewebsites.net/runtime/webhooks/mcp</code></pre>
+
+        <p>Save your function key—you'll need it to authenticate the MCP client in the next step.</p>
+
+        <h3>Test the MCP Endpoint</h3>
+        <pre><code>curl -X POST https://func-mcp-football.azurewebsites.net/runtime/webhooks/mcp \
+  -H "x-functions-key: YOUR_KEY_HERE" \
+  -H "Content-Type: application/json" \
+  -d '{"action": "list_tools"}'</code></pre>
+
+        <p>This should return the list of available MCP tools (search_players, get_player_stats, compare_players).</p>
+
+        <div class="screenshot-wrapper">
+            <!-- Image placeholder: Azure Functions portal overview -->
+            <p><em>Screenshot reference: ./images/azure-functions-overview.png - Shows Azure Functions app overview with func-mcp-football</em></p>
+        </div>
+
+        <div class="screenshot-wrapper">
+            <!-- Image placeholder: Functions list with MCP tools -->
+            <p><em>Screenshot reference: ./images/functions-list.png - Shows Functions list displaying 3 MCP tools with mcpToolTrigger bindings</em></p>
+        </div>
+
+        <h2 id="step-4">Step 4: Create the Foundry Agent</h2>
+        <p>Now we'll write a Python script that creates a Foundry Agent and connects it to your MCP server.</p>
+
+        <h3>Install the SDK</h3>
+        <pre><code>pip install azure-ai-projects[telemetry]==0.10.0</code></pre>
+
+        <h3>Create create_agent.py</h3>
+        <p>This script creates the agent, configures the MCP tool, and demonstrates the conversation API:</p>
+        <pre><code>import os
+from azure.identity import DefaultAzureCredential
+from azure.ai.projects import AIProjectClient
+from azure.ai.projects.models import MCPTool, PromptAgentDefinition
+
+# Configuration
+FOUNDRY_ENDPOINT = &quot;https://foundry-mcp-tutorial.services.ai.azure.com/api/projects/mcp-football-agent&quot;
+MCP_SERVER_URL = &quot;https://func-mcp-football.azurewebsites.net/runtime/webhooks/mcp&quot;
+MCP_SERVER_KEY = os.getenv(&quot;MCP_SERVER_KEY&quot;)  # Set as environment variable
+MODEL = &quot;gpt-4.1-mini&quot;
+
+if not MCP_SERVER_KEY:
+    raise ValueError(&quot;MCP_SERVER_KEY environment variable not set&quot;)
+
+# Initialize the project client
+credential = DefaultAzureCredential()
+project_client = AIProjectClient(
+    endpoint=FOUNDRY_ENDPOINT,
+    credential=credential
+)
+
+# Define the MCP tool
+mcp_tool = MCPTool(
+    server_label=&quot;football-stats&quot;,
+    server_url=MCP_SERVER_URL,
+    headers={&quot;x-functions-key&quot;: MCP_SERVER_KEY},
+    require_approval=&quot;never&quot;,
+)
+
+# Create the agent
+agent = project_client.agents.create_version(
+    agent_name=&quot;football-scout-agent&quot;,
+    definition=PromptAgentDefinition(
+        model=MODEL,
+        instructions=(
+            &quot;You are a football statistics expert. You have access to tools &quot;
+            &quot;that query a database of world-class football players. &quot;
+            &quot;Use these tools to answer questions about player statistics, &quot;
+            &quot;compare players, and provide insights about their performance. &quot;
+            &quot;Always provide context and explain comparisons.&quot;
+        ),
+        tools=[mcp_tool],
+    ),
+)
+
+print(f&quot;Agent created: {agent.name}&quot;)
+print(f&quot;Agent ID: {agent.id}&quot;)
+
+# Get the OpenAI client for conversations
+openai_client = project_client.get_openai_client()
+
+# Example conversation: Query 1
+print(&quot;\n--- Query 1: Who are the Polish players? ---&quot;)
+conversation = openai_client.conversations.create(
+    items=[{
+        &quot;type&quot;: &quot;message&quot;,
+        &quot;role&quot;: &quot;user&quot;,
+        &quot;content&quot;: &quot;Who are the Polish players?&quot;
+    }]
+)
+
+response = openai_client.responses.create(
+    conversation=conversation.id,
+    extra_body={
+        &quot;agent_reference&quot;: {
+            &quot;name&quot;: agent.name,
+            &quot;type&quot;: &quot;agent_reference&quot;
+        }
+    }
+)
+
+print(response.output_text)</code></pre>
+
+        <h3>Set Environment Variable</h3>
+        <pre><code>export MCP_SERVER_KEY="your-function-key-here"</code></pre>
+
+        <h3>Run the Agent Creation Script</h3>
+        <pre><code>python create_agent.py</code></pre>
+
+        <p>The script will create the agent and demonstrate its first query.</p>
+
+        <div class="screenshot-wrapper">
+            <!-- Image placeholder: Foundry project portal -->
+            <p><em>Screenshot reference: ./images/foundry-project.png - Shows Azure AI Foundry portal with mcp-football-agent project</em></p>
+        </div>
+
+        <h2 id="step-5">Step 5: Test the Agent</h2>
+        <p>Let's test the agent with three different queries to showcase its capabilities.</p>
+
+        <h3>Test Query 1: Search Polish Players</h3>
+        <p><strong>Input:</strong> "Who are the Polish players?"</p>
+        <p><strong>Agent Action:</strong> Calls <code>search_players("Poland")</code></p>
+        <p><strong>Output:</strong></p>
+        <pre><code>Found 2 player(s) matching 'Poland':
+
+- Robert Lewandowski (Poland) - Striker at FC Barcelona
+- Wojciech Szczęsny (Poland) - Goalkeeper at FC Barcelona
+
+Both players represent Polish football excellence at the highest level.
+Lewandowski is one of the world's most prolific strikers with 672 career
+goals, while Szczęsny provides defensive stability as a goalkeeper.</code></pre>
+
+        <h3>Test Query 2: Get Detailed Player Stats</h3>
+        <p><strong>Input:</strong> "Get me detailed stats for Haaland"</p>
+        <p><strong>Agent Action:</strong> Calls <code>get_player_stats("Haaland")</code></p>
+        <p><strong>Output:</strong></p>
+        <pre><code>Erling Haaland - Striker
+Club: Manchester City | Age: 25 | Nationality: Norway
+
+Season 2025/26 Stats:
+  Appearances: 24
+  Goals: 21
+  Assists: 4
+  Minutes Played: 2016
+  Goals per 90 min: 0.94
+  Shot Accuracy: 61.2%
+  Pass Accuracy: 76.8%
+
+Career Stats:
+  Total Goals: 198
+  Total Assists: 52
+
+Haaland's 0.94 goals per 90 minutes demonstrates elite finishing ability,
+ranking among the best strikers globally. His shot accuracy of 61.2% shows
+clinical efficiency.</code></pre>
+
+        <h3>Test Query 3: Compare Two Players</h3>
+        <p><strong>Input:</strong> "Compare Lewandowski and Mbappé"</p>
+        <p><strong>Agent Action:</strong> Calls <code>compare_players("Lewandowski", "Mbappé")</code></p>
+        <p><strong>Output:</strong></p>
+        <pre><code>Comparison: Robert Lewandowski vs Kylian Mbappé
+
+Metric                    Robert Lewandowski       Kylian Mbappé
+----------------------------------------------------------------------
+Position                  Striker                  Forward
+Club                      FC Barcelona             Real Madrid
+Goals (Season)            19                       22
+Assists (Season)          5                        8
+Goals per 90              0.73                     0.94
+Pass Accuracy             81.3%                    79.2%
+Career Goals              672                      286
+
+Despite being three years older, Lewandowski maintains exceptional
+consistency with 19 goals this season. Mbappé's 0.94 goals per 90 shows
+slightly higher efficiency, while Lewandowski's career record demonstrates
+sustained excellence over a decade.</code></pre>
+
+        <div class="screenshot-wrapper">
+            <!-- Image placeholder: Terminal output showing agent responses -->
+            <p><em>Screenshot reference: ./images/agent-output.png - Terminal screenshot showing the three test queries and agent responses</em></p>
+        </div>
+
+        <h2 id="takeaways">Key Takeaways</h2>
+        <ul>
+            <li><strong>MCP is universal:</strong> Once you write an MCP server, any MCP-compatible model (OpenAI, Anthropic, Google, etc.) can use your tools without code changes.</li>
+            <li><strong>Azure Functions simplify hosting:</strong> The MCP extension turns Python decorators into production-ready MCP tools with scaling, monitoring, and authentication built in.</li>
+            <li><strong>Natural language interfaces are powerful:</strong> Users don't need to learn API docs or SQL—they ask questions, and the AI agent figures out which tools to call.</li>
+            <li><strong>Conversations API is clean:</strong> The new <code>azure-ai-projects</code> v2 SDK makes creating and managing agent conversations straightforward, with clear separation between agent definitions and runtime interactions.</li>
+            <li><strong>Tool discovery is automatic:</strong> Your MCP tools are automatically published to Foundry, making them available immediately to any agent in your workspace.</li>
+        </ul>
+
+        <div class="callout callout-tip">
+            <div class="callout-title">Pro Tip: Iterating Quickly</div>
+            <p>During development, use <code>func start</code> to run Functions locally, then point your agent at <code>http://localhost:7071/runtime/webhooks/mcp</code>. No deployment needed for rapid iteration.</p>
+        </div>
+
+        <h2 id="next-steps">Next Steps</h2>
+        <p>You've built the foundation. Here are ways to extend this system:</p>
+
+        <h3>1. Integrate a Real Football API</h3>
+        <p>Replace the in-memory <code>PLAYERS</code> database with live data from <a href="https://www.football-data.org/" target="_blank">football-data.org</a>. Your functions will automatically query live stats without changes to the agent.</p>
+
+        <h3>2. Add More Tools</h3>
+        <p>Extend the MCP server with additional functions:</p>
+        <ul>
+            <li><code>get_team_stats</code> - Retrieve team information and standings</li>
+            <li><code>get_match_predictions</code> - Use ML models to predict match outcomes</li>
+            <li><code>get_injury_news</code> - Query latest injury reports</li>
+            <li><code>analyze_tactical_formation</code> - Suggest optimal team formations</li>
+        </ul>
+
+        <h3>3. Deploy as a Teams Bot</h3>
+        <p>Wrap your agent in a Teams bot using the <a href="https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/identity" target="_blank">Teams SDK</a>. Bring football analytics directly into your organization's chat.</p>
+
+        <h3>4. Add an Approval Workflow</h3>
+        <p>Change <code>require_approval="never"</code> to <code>require_approval="always"</code> for sensitive operations. The agent will request approval before executing certain tools.</p>
+
+        <h3>5. Implement Caching</h3>
+        <p>Add Redis caching to your Azure Functions to avoid redundant API calls and speed up repeated queries.</p>
+
+        <h3>6. Build a Web Interface</h3>
+        <p>Create a React or Next.js frontend that communicates with your Foundry Agent. Users get a polished UI while the AI handles complexity under the hood.</p>
+
+        <div class="callout callout-note">
+            <div class="callout-title">Production Ready</div>
+            <p>This tutorial covers the core pattern. For production, add monitoring with Application Insights, implement authentication via Azure AD, use managed identities instead of function keys, and enable Backup & Disaster Recovery.</p>
+        </div>
+
+        <!-- REFERENCES -->
+        <section class="references">
+            <h2>References &amp; Further Reading</h2>
+            <ol>
+                <li>
+                    <a href="https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-mcp-tool-trigger" target="_blank">MCP tool trigger for Azure Functions</a>
+                    <span class="source-type">Microsoft Learn</span>
+                    <div class="source-desc">Official documentation on creating MCP tool triggers in Azure Functions.</div>
+                </li>
+                <li>
+                    <a href="https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-mcp" target="_blank">Model context protocol bindings for Azure Functions</a>
+                    <span class="source-type">Microsoft Learn</span>
+                    <div class="source-desc">Complete reference for MCP bindings, configuration, and best practices.</div>
+                </li>
+                <li>
+                    <a href="https://github.com/Azure/azure-functions-mcp-extension" target="_blank">Azure Functions MCP Extension GitHub</a>
+                    <span class="source-type">GitHub</span>
+                    <div class="source-desc">Source code and examples for the Azure Functions MCP extension.</div>
+                </li>
+                <li>
+                    <a href="https://github.com/Azure-Samples/remote-mcp-functions-python" target="_blank">Remote MCP Functions Python Sample</a>
+                    <span class="source-type">GitHub Sample</span>
+                    <div class="source-desc">Complete end-to-end Python sample deploying MCP servers to Azure Functions.</div>
+                </li>
+                <li>
+                    <a href="https://learn.microsoft.com/en-us/python/api/overview/azure/ai-projects-readme" target="_blank">Azure AI Projects SDK v2</a>
+                    <span class="source-type">Microsoft Learn</span>
+                    <div class="source-desc">Python SDK documentation for creating and managing Foundry agents.</div>
+                </li>
+                <li>
+                    <a href="https://modelcontextprotocol.io/" target="_blank">Model Context Protocol</a>
+                    <span class="source-type">Official Site</span>
+                    <div class="source-desc">Official MCP specification and design documentation.</div>
+                </li>
+                <li>
+                    <a href="https://techcommunity.microsoft.com/blog/appsonazureblog/building-mcp-apps-with-azure-functions-mcp-extension/4496536" target="_blank">Building MCP Apps with Azure Functions</a>
+                    <span class="source-type">Microsoft Tech Community</span>
+                    <div class="source-desc">Deep dive on MCP extension architecture, patterns, and real-world examples.</div>
+                </li>
+            </ol>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="article-footer">
+            <p>Written by Maciej Rubczyński on March 16, 2026</p>
+            <div class="tags">
+                <span class="tag">Azure Functions</span>
+                <span class="tag">MCP</span>
+                <span class="tag">Model Context Protocol</span>
+                <span class="tag">Microsoft Foundry</span>
+                <span class="tag">AI Agents</span>
+                <span class="tag">Python</span>
+                <span class="tag">Football</span>
+                <span class="tag">gpt-4.1-mini</span>
+            </div>
+        </footer>
+    </main>
+</body>
+</html>
