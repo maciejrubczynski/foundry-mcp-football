@@ -456,26 +456,15 @@
         <p><strong>Component 3: Client (Python SDK)</strong><br>
         Uses <code>azure-ai-projects</code> SDK v2 to create agents, manage conversations, and invoke the agent with user queries.</p>
 
-        <pre><code>User Query
-    |
-    v
-[Foundry Agent | gpt-5-mini]
-    |
-    | (decides to call MCP tools)
-    v
-[MCP Dispatcher]
-    |
-    v
-[Azure Functions MCP Server]
- - search_players
- - get_player_stats
- - compare_players
-    |
-    v
-[Response back to Agent]
-    |
-    v
-[Natural Language Answer to User]</code></pre>
+        <div style="text-align:center; margin: 2rem 0;">
+            <img src="diagrams/architecture.svg" alt="Architecture Overview: Client → Microsoft Foundry → Azure Functions MCP Server" style="max-width:100%; height:auto; border-radius:8px; box-shadow:0 2px 12px rgba(0,0,0,0.1);">
+        </div>
+
+        <p>And here's the request flow showing exactly what happens when a user asks <em>"Compare Lewandowski and Mbappé"</em>:</p>
+
+        <div style="text-align:center; margin: 2rem 0;">
+            <img src="diagrams/request-flow.svg" alt="Request Flow: 7-step sequence diagram showing how a comparison query flows through the system" style="max-width:100%; height:auto; border-radius:8px; box-shadow:0 2px 12px rgba(0,0,0,0.1);">
+        </div>
 
         <h2 id="prerequisites">Prerequisites</h2>
         <ul>

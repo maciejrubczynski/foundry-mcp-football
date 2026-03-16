@@ -1,0 +1,146 @@
+<mxfile host="app.diagrams.net" modified="2026-03-16T14:30:00.000Z" agent="Claude" version="24.0.0">
+  <diagram id="request-flow" name="Request Flow">
+    <mxGraphModel dx="1100" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="&lt;b&gt;Request Flow: &quot;Compare Lewandowski and Mbappé&quot;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=18;fontColor=#1a1a2e;" vertex="1" parent="1">
+          <mxGeometry x="220" y="15" width="530" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Participants (top) -->
+        <mxCell id="user_head" value="&lt;b&gt;User / Client&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;create_agent.py&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;fontSize=12;arcSize=20;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="70" width="140" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="agent_head" value="&lt;b&gt;Foundry Agent&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;GPT-5-mini&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=12;arcSize=20;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="370" y="70" width="140" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="mcp_head" value="&lt;b&gt;MCP Server&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Azure Functions&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;fontSize=12;arcSize=20;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="680" y="70" width="140" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Lifelines -->
+        <mxCell id="user_line" value="" style="endArrow=none;html=1;strokeColor=#6c8ebf;strokeWidth=2;dashed=1;dashPattern=8 4;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="130" y="120" as="sourcePoint" />
+            <mxPoint x="130" y="830" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="agent_line" value="" style="endArrow=none;html=1;strokeColor=#d6b656;strokeWidth=2;dashed=1;dashPattern=8 4;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="120" as="sourcePoint" />
+            <mxPoint x="440" y="830" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="mcp_line" value="" style="endArrow=none;html=1;strokeColor=#82b366;strokeWidth=2;dashed=1;dashPattern=8 4;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="750" y="120" as="sourcePoint" />
+            <mxPoint x="750" y="830" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Step 1: User sends message -->
+        <mxCell id="step1_num" value="&lt;font color=&quot;#ffffff&quot;&gt;&lt;b&gt;1&lt;/b&gt;&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#0078d4;strokeColor=none;fontSize=14;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="145" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="step1" value="&lt;font style=&quot;font-size:11px;&quot;&gt;&quot;Compare Lewandowski and Mbappé&quot;&lt;/font&gt;" style="endArrow=classic;html=1;strokeColor=#0078d4;strokeWidth=2;fontSize=11;labelBackgroundColor=#ffffff;fontColor=#333;" edge="1" parent="1">
+          <mxGeometry x="0.02" y="10" relative="1" as="geometry">
+            <mxPoint x="135" y="160" as="sourcePoint" />
+            <mxPoint x="435" y="160" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="step1_detail" value="&lt;font style=&quot;font-size:10px;&quot; color=&quot;#666&quot;&gt;conversations.create() + responses.create()&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="175" y="165" width="250" height="25" as="geometry" />
+        </mxCell>
+
+        <!-- Step 2: Agent reasons and decides to call MCP tool -->
+        <mxCell id="step2_num" value="&lt;font color=&quot;#ffffff&quot;&gt;&lt;b&gt;2&lt;/b&gt;&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d6b656;strokeColor=none;fontSize=14;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="330" y="200" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="step2_box" value="&lt;font style=&quot;font-size:11px;&quot;&gt;GPT-5-mini reasons:&lt;br&gt;&quot;I need to call &lt;b&gt;compare_players&lt;/b&gt;&lt;br&gt;with player1=lewandowski,&lt;br&gt;player2=mbappe&quot;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#d6b656;strokeWidth=1;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="365" y="200" width="230" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Step 3: Agent calls MCP tool -->
+        <mxCell id="step3_num" value="&lt;font color=&quot;#ffffff&quot;&gt;&lt;b&gt;3&lt;/b&gt;&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#82b366;strokeColor=none;fontSize=14;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="330" y="290" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="step3" value="&lt;font style=&quot;font-size:11px;&quot;&gt;MCP tool_call: compare_players&lt;br&gt;{player1: &quot;lewandowski&quot;, player2: &quot;mbappe&quot;}&lt;/font&gt;" style="endArrow=classic;html=1;strokeColor=#82b366;strokeWidth=2;fontSize=11;labelBackgroundColor=#ffffff;fontColor=#333;" edge="1" parent="1">
+          <mxGeometry x="0.02" y="10" relative="1" as="geometry">
+            <mxPoint x="445" y="305" as="sourcePoint" />
+            <mxPoint x="745" y="305" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="step3_auth" value="&lt;font style=&quot;font-size:9px;&quot; color=&quot;#b85450&quot;&gt;🔐 x-functions-key header&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="530" y="310" width="160" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Step 4: MCP Server processes -->
+        <mxCell id="step4_num" value="&lt;font color=&quot;#ffffff&quot;&gt;&lt;b&gt;4&lt;/b&gt;&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#82b366;strokeColor=none;fontSize=14;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="345" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="step4_box" value="&lt;font style=&quot;font-size:11px;&quot;&gt;Azure Function executes:&lt;br&gt;• Look up both players&lt;br&gt;• Compute stat differences&lt;br&gt;• Return JSON comparison&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#82b366;strokeWidth=1;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="670" y="345" width="200" height="75" as="geometry" />
+        </mxCell>
+
+        <!-- Step 5: MCP returns result -->
+        <mxCell id="step5_num" value="&lt;font color=&quot;#ffffff&quot;&gt;&lt;b&gt;5&lt;/b&gt;&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#82b366;strokeColor=none;fontSize=14;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="330" y="440" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="step5" value="&lt;font style=&quot;font-size:11px;&quot;&gt;Tool result: {player1: {goals: 26, assists: 5, ...},&lt;br&gt;player2: {goals: 23, assists: 10, ...}, diff: {...}}&lt;/font&gt;" style="endArrow=classic;html=1;strokeColor=#82b366;strokeWidth=2;fontSize=11;labelBackgroundColor=#ffffff;fontColor=#333;dashed=1;dashPattern=5 3;" edge="1" parent="1">
+          <mxGeometry x="0.02" y="-10" relative="1" as="geometry">
+            <mxPoint x="745" y="455" as="sourcePoint" />
+            <mxPoint x="445" y="455" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Step 6: Agent formats response -->
+        <mxCell id="step6_num" value="&lt;font color=&quot;#ffffff&quot;&gt;&lt;b&gt;6&lt;/b&gt;&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d6b656;strokeColor=none;fontSize=14;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="330" y="490" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="step6_box" value="&lt;font style=&quot;font-size:11px;&quot;&gt;GPT-5-mini synthesizes:&lt;br&gt;Formats comparison in natural&lt;br&gt;language with analysis&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#d6b656;strokeWidth=1;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="365" y="490" width="230" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Step 7: Response back to user -->
+        <mxCell id="step7_num" value="&lt;font color=&quot;#ffffff&quot;&gt;&lt;b&gt;7&lt;/b&gt;&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#0078d4;strokeColor=none;fontSize=14;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="570" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="step7" value="&lt;font style=&quot;font-size:11px;&quot;&gt;Natural language response&lt;/font&gt;" style="endArrow=classic;html=1;strokeColor=#0078d4;strokeWidth=2;fontSize=11;labelBackgroundColor=#ffffff;fontColor=#333;dashed=1;dashPattern=5 3;" edge="1" parent="1">
+          <mxGeometry x="0.02" y="-10" relative="1" as="geometry">
+            <mxPoint x="435" y="585" as="sourcePoint" />
+            <mxPoint x="135" y="585" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Response preview box -->
+        <mxCell id="response_box" value="&lt;font style=&quot;font-size:11px;&quot;&gt;🤖 &quot;Lewandowski leads in goals (26 vs 23)&lt;br&gt;while Mbappé edges ahead in assists&lt;br&gt;(10 vs 5). Lewandowski has the better&lt;br&gt;goals-per-game ratio at 0.81...&quot;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f4fd;strokeColor=#0078d4;strokeWidth=2;fontSize=11;arcSize=10;shadow=1;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="55" y="610" width="290" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Timing annotations -->
+        <mxCell id="timing1" value="&lt;font style=&quot;font-size:9px;&quot; color=&quot;#999&quot;&gt;~100ms&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="260" y="140" width="60" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="timing2" value="&lt;font style=&quot;font-size:9px;&quot; color=&quot;#999&quot;&gt;~200ms&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="570" y="288" width="60" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="timing3" value="&lt;font style=&quot;font-size:9px;&quot; color=&quot;#999&quot;&gt;~50ms&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="570" y="438" width="50" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Bottom note -->
+        <mxCell id="note" value="&lt;font style=&quot;font-size:11px;&quot; color=&quot;#666&quot;&gt;💡 The agent autonomously decides which MCP tools to call based on the user's question.&lt;br&gt;For simple queries like &quot;search Polish players&quot;, it calls &lt;b&gt;search_players&lt;/b&gt; instead.&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#cccccc;strokeWidth=1;fontSize=11;arcSize=10;align=left;spacingLeft=15;" vertex="1" parent="1">
+          <mxGeometry x="55" y="720" width="540" height="55" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
