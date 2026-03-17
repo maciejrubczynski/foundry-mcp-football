@@ -526,14 +526,14 @@ func new --name football_stats --template "HTTP trigger"</code></pre>
 
         <h3>Install Dependencies</h3>
         <p>Create <code>requirements.txt</code>:</p>
-        <pre><code>azure-functions==1.25.0b3
-azure-functions-mcp-extension==0.1.0</code></pre>
+        <pre><code>azure-functions==1.25.0b3</code></pre>
 
         <p>Install them:</p>
         <pre><code>pip install -r requirements.txt</code></pre>
 
         <h3>Create function_app.py</h3>
         <p>Replace the generated files with this complete implementation:</p>
+        <div class="callout"><strong>Note:</strong> The player statistics below are sample data for demonstration purposes. In a production scenario, you would connect to a real football data API.</div>
         <pre><code>&quot;&quot;&quot;
 MCP Server for Football (Soccer) Statistics
 Deployed as Azure Functions with MCP extension bindings.
@@ -603,7 +603,7 @@ PLAYERS = {
     &quot;bellingham&quot;: {
         &quot;id&quot;: &quot;bel5&quot;, &quot;name&quot;: &quot;Jude Bellingham&quot;,
         &quot;nationality&quot;: &quot;England&quot;, &quot;position&quot;: &quot;Midfielder&quot;,
-        &quot;club&quot;: &quot;Real Madrid&quot;, &quot;age&quot;: 21,
+        &quot;club&quot;: &quot;Real Madrid&quot;, &quot;age&quot;: 22,
         &quot;stats&quot;: {
             &quot;season&quot;: &quot;2025/26&quot;, &quot;appearances&quot;: 22, &quot;goals&quot;: 8,
             &quot;assists&quot;: 6, &quot;minutes_played&quot;: 1890, &quot;goals_per_90&quot;: 0.38,
@@ -625,7 +625,7 @@ PLAYERS = {
     &quot;szczesny&quot;: {
         &quot;id&quot;: &quot;szc1&quot;, &quot;name&quot;: &quot;Wojciech Szczęsny&quot;,
         &quot;nationality&quot;: &quot;Poland&quot;, &quot;position&quot;: &quot;Goalkeeper&quot;,
-        &quot;club&quot;: &quot;FC Barcelona&quot;, &quot;age&quot;: 34,
+        &quot;club&quot;: &quot;FC Barcelona&quot;, &quot;age&quot;: 36,
         &quot;stats&quot;: {
             &quot;season&quot;: &quot;2025/26&quot;, &quot;appearances&quot;: 24, &quot;goals&quot;: 0,
             &quot;assists&quot;: 0, &quot;minutes_played&quot;: 2160, &quot;clean_sheets&quot;: 8,
@@ -805,7 +805,7 @@ def compare_players(player1_name: str, player2_name: str) -&gt; str:
         <p>Now we'll write a Python script that creates a Foundry Agent and connects it to your MCP server.</p>
 
         <h3>Install the SDK</h3>
-        <pre><code>pip install azure-ai-projects[telemetry]==0.10.0</code></pre>
+        <pre><code>pip install azure-ai-projects==2.0.1</code></pre>
 
         <h3>Create create_agent.py</h3>
         <p>This script creates the agent, configures the MCP tool, and demonstrates the conversation API:</p>
