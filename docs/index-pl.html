@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Deploy a custom MCP server on Azure Functions, connect it to a Foundry Agent with gpt-5-mini, and query football player data using natural language">
+    <meta name="description" content="Wdróż własny serwer MCP na Azure Functions, połącz go z Agentem Foundry wykorzystującym gpt-5-mini i odpytuj dane piłkarskie w języku naturalnym">
     <meta name="author" content="Maciej Rubczyński">
-    <meta property="og:title" content="Build a Football Stats MCP Server with Azure Functions + Foundry Agent">
-    <meta property="og:description" content="Deploy a custom MCP server on Azure Functions, connect it to a Foundry Agent with gpt-5-mini, and query football player data using natural language">
+    <meta property="og:title" content="Budujemy serwer MCP ze statystykami piłkarskimi — Azure Functions + Agent Foundry">
+    <meta property="og:description" content="Wdróż własny serwer MCP na Azure Functions, połącz go z Agentem Foundry wykorzystującym gpt-5-mini i odpytuj dane piłkarskie w języku naturalnym">
     <meta property="og:type" content="article">
-    <title>Build a Football Stats MCP Server with Azure Functions + Foundry Agent</title>
+    <title>Budujemy serwer MCP ze statystykami piłkarskimi — Azure Functions + Agent Foundry</title>
     <style>
         /* Reset and base */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -89,6 +89,30 @@
             display: flex;
             align-items: center;
             gap: 0.35rem;
+        }
+
+        /* Language switcher */
+        .lang-switch {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .lang-switch a {
+            color: white;
+            text-decoration: none;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .lang-switch a:hover, .lang-switch a.active {
+            opacity: 1;
+            background: rgba(255,255,255,0.2);
         }
 
         /* Main content */
@@ -375,119 +399,120 @@
             .article-hero { padding: 2.5rem 1.25rem 2rem; }
             .article-container { padding: 1.5rem 1rem 3rem; }
             .article-meta { flex-direction: column; align-items: center; gap: 0.5rem; }
+            .lang-switch { position: static; justify-content: center; margin-bottom: 1rem; }
         }
     </style>
 </head>
 <body>
     <header class="article-hero" style="position: relative;">
-        <div style="position:absolute;top:1rem;right:1.5rem;display:flex;gap:0.5rem;">
-            <a href="index.html" style="color:white;text-decoration:none;padding:0.25rem 0.6rem;border-radius:4px;font-size:0.8rem;opacity:1;background:rgba(255,255,255,0.2);">EN</a>
-            <a href="index-pl.html" style="color:white;text-decoration:none;padding:0.25rem 0.6rem;border-radius:4px;font-size:0.8rem;opacity:0.7;">PL</a>
+        <div class="lang-switch">
+            <a href="index.html">EN</a>
+            <a href="index-pl.html" class="active">PL</a>
         </div>
-        <div class="category">Azure AI Tutorial</div>
-        <h1>Build a Football Stats MCP Server with Azure Functions + Foundry Agent</h1>
-        <p class="subtitle">Deploy a custom MCP server on Azure Functions, connect it to a Foundry Agent with gpt-5-mini, and query football player data using natural language</p>
+        <div class="category">Poradnik Azure AI</div>
+        <h1>Budujemy serwer MCP ze statystykami piłkarskimi — Azure Functions + Agent Foundry</h1>
+        <p class="subtitle">Wdróż własny serwer MCP na Azure Functions, połącz go z Agentem Foundry wykorzystującym gpt-5-mini i odpytuj dane piłkarskie w języku naturalnym</p>
         <div class="article-meta">
             <span>Maciej Rubczyński</span>
-            <span>March 16, 2026</span>
-            <span>12 min read</span>
+            <span>16 marca 2026</span>
+            <span>12 min czytania</span>
         </div>
     </header>
 
     <main class="article-container">
-        <!-- TABLE OF CONTENTS -->
+        <!-- SPIS TREŚCI -->
         <div class="toc">
-            <div class="toc-title">Table of Contents</div>
+            <div class="toc-title">Spis treści</div>
             <ul>
-                <li><a href="#introduction">Introduction</a></li>
-                <li><a href="#what-is-mcp">What is MCP?</a></li>
-                <li><a href="#architecture">Architecture Overview</a></li>
-                <li><a href="#prerequisites">Prerequisites</a></li>
-                <li><a href="#step-1">Step 1: Create Azure Resources</a></li>
-                <li><a href="#step-2">Step 2: Build the MCP Server</a></li>
-                <li><a href="#step-3">Step 3: Deploy to Azure Functions</a></li>
-                <li><a href="#step-4">Step 4: Create the Foundry Agent</a></li>
-                <li><a href="#step-5">Step 5: Test the Agent</a></li>
-                <li><a href="#takeaways">Key Takeaways</a></li>
-                <li><a href="#next-steps">Next Steps</a></li>
+                <li><a href="#introduction">Wprowadzenie</a></li>
+                <li><a href="#what-is-mcp">Czym jest MCP?</a></li>
+                <li><a href="#architecture">Przegląd architektury</a></li>
+                <li><a href="#prerequisites">Wymagania wstępne</a></li>
+                <li><a href="#step-1">Krok 1: Tworzenie zasobów Azure</a></li>
+                <li><a href="#step-2">Krok 2: Budowa serwera MCP</a></li>
+                <li><a href="#step-3">Krok 3: Wdrożenie na Azure Functions</a></li>
+                <li><a href="#step-4">Krok 4: Tworzenie Agenta Foundry</a></li>
+                <li><a href="#step-5">Krok 5: Testowanie Agenta</a></li>
+                <li><a href="#takeaways">Najważniejsze wnioski</a></li>
+                <li><a href="#next-steps">Dalsze kroki</a></li>
             </ul>
         </div>
 
-        <!-- ARTICLE CONTENT -->
+        <!-- TREŚĆ ARTYKUŁU -->
 
-        <h2 id="introduction">Introduction</h2>
-        <p>In this tutorial, we'll build a complete end-to-end AI agent system that understands football (soccer) statistics. Here's what makes this powerful: we're creating a custom <strong>MCP server</strong> deployed to Azure Functions, then connecting it to a <strong>Foundry Agent</strong> powered by OpenAI's gpt-5-mini model. The agent can search players, retrieve detailed statistics, and compare players directly using natural language—no SQL queries, no complex APIs to learn.</p>
-        <p>By the end of this tutorial, you'll understand how to:</p>
+        <h2 id="introduction">Wprowadzenie</h2>
+        <p>W tym poradniku zbudujemy kompletny system agenta AI, który rozumie statystyki piłkarskie. Stworzymy własny <strong>serwer MCP</strong> wdrożony na Azure Functions, a następnie połączymy go z <strong>Agentem Foundry</strong> zasilanym modelem gpt-5-mini od OpenAI. Agent będzie mógł wyszukiwać zawodników, pobierać szczegółowe statystyki i porównywać graczy bezpośrednio w języku naturalnym — bez zapytań SQL, bez skomplikowanych API do nauki.</p>
+        <p>Po ukończeniu tego poradnika będziesz wiedzieć, jak:</p>
         <ul>
-            <li>Build an MCP server as Azure Functions using Python</li>
-            <li>Deploy it securely and expose it as callable tools</li>
-            <li>Create a Foundry Agent that combines the model with your custom tools</li>
-            <li>Have a natural language interface to your proprietary data</li>
+            <li>Zbudować serwer MCP jako Azure Functions w Pythonie</li>
+            <li>Wdrożyć go bezpiecznie i udostępnić jako wywoływalne narzędzia</li>
+            <li>Stworzyć Agenta Foundry łączącego model z Twoimi własnymi narzędziami</li>
+            <li>Mieć interfejs w języku naturalnym do własnych danych</li>
         </ul>
-        <p>This pattern works for any domain: HR databases, sales pipelines, inventory systems, or internal knowledge bases. Let's build something real.</p>
+        <p>Ten wzorzec działa dla dowolnej domeny: bazy HR, pipeline sprzedażowe, systemy magazynowe czy wewnętrzne bazy wiedzy. Zbudujmy coś prawdziwego.</p>
 
-        <h2 id="what-is-mcp">What is MCP?</h2>
-        <p><strong>Model Context Protocol (MCP)</strong> is an open standard that defines how AI models interact with external tools and data sources. Think of it as a universal adapter between large language models and your applications.</p>
-        <p>Instead of building custom integrations for each model (OpenAI, Anthropic, Google, etc.), you define your tools once following the MCP spec, and any MCP-compatible model can use them. Azure Functions now has first-class support for MCP through the <strong>MCP tool trigger binding</strong>, which lets you expose Python functions as MCP tools with just a decorator.</p>
+        <h2 id="what-is-mcp">Czym jest MCP?</h2>
+        <p><strong>Model Context Protocol (MCP)</strong> to otwarty standard definiujący sposób interakcji modeli AI z zewnętrznymi narzędziami i źródłami danych. Można go sobie wyobrazić jako uniwersalny adapter między dużymi modelami językowymi a Twoimi aplikacjami.</p>
+        <p>Zamiast budować osobne integracje dla każdego modelu (OpenAI, Anthropic, Google itp.), definiujesz narzędzia raz zgodnie ze specyfikacją MCP, a każdy model kompatybilny z MCP może z nich korzystać. Azure Functions ma teraz natywne wsparcie dla MCP poprzez <strong>MCP tool trigger binding</strong>, który pozwala udostępniać funkcje Pythona jako narzędzia MCP za pomocą jednego dekoratora.</p>
 
         <div class="callout callout-tip">
-            <div class="callout-title">Why MCP on Azure Functions?</div>
-            <p>Azure Functions handles scaling, authentication, and monitoring. You write your Python business logic; Functions and the MCP extension handle the protocol, making your functions instantly available to any MCP client including Foundry Agents.</p>
+            <div class="callout-title">Dlaczego MCP na Azure Functions?</div>
+            <p>Azure Functions obsługuje skalowanie, uwierzytelnianie i monitoring. Ty piszesz logikę biznesową w Pythonie; Functions i rozszerzenie MCP zajmują się protokołem, udostępniając Twoje funkcje natychmiast każdemu klientowi MCP, w tym Agentom Foundry.</p>
         </div>
 
-        <h2 id="architecture">Architecture Overview</h2>
-        <p>Our system has three main components:</p>
+        <h2 id="architecture">Przegląd architektury</h2>
+        <p>Nasz system składa się z trzech głównych komponentów:</p>
 
-        <p><strong>Component 1: MCP Server (Azure Functions)</strong><br>
-        Hosts three Python functions decorated as MCP tools:
+        <p><strong>Komponent 1: Serwer MCP (Azure Functions)</strong><br>
+        Hostuje trzy funkcje Pythona oznaczone jako narzędzia MCP:
         </p>
         <ul>
-            <li><code>search_players</code> - Search by name, nationality, position, or club</li>
-            <li><code>get_player_stats</code> - Retrieve season and career stats</li>
-            <li><code>compare_players</code> - Compare two players side-by-side</li>
+            <li><code>search_players</code> — wyszukiwanie po nazwisku, narodowości, pozycji lub klubie</li>
+            <li><code>get_player_stats</code> — pobieranie statystyk sezonowych i kariery</li>
+            <li><code>compare_players</code> — porównanie dwóch zawodników obok siebie</li>
         </ul>
 
-        <p><strong>Component 2: Foundry Agent Service</strong><br>
-        Runs gpt-5-mini and orchestrates tool calls. It:
+        <p><strong>Komponent 2: Usługa Foundry Agent</strong><br>
+        Uruchamia gpt-5-mini i orkiestruje wywołania narzędzi:
         </p>
         <ul>
-            <li>Receives natural language queries from users</li>
-            <li>Decides which MCP tools to call (if any)</li>
-            <li>Executes the MCP tools via HTTP to your Azure Functions</li>
-            <li>Synthesizes results into a natural language response</li>
+            <li>Odbiera zapytania w języku naturalnym od użytkowników</li>
+            <li>Decyduje, które narzędzia MCP wywołać (jeśli w ogóle)</li>
+            <li>Wykonuje narzędzia MCP przez HTTP do Twoich Azure Functions</li>
+            <li>Syntetyzuje wyniki w odpowiedź w języku naturalnym</li>
         </ul>
 
-        <p><strong>Component 3: Client (Python SDK)</strong><br>
-        Uses <code>azure-ai-projects</code> SDK v2 to create agents, manage conversations, and invoke the agent with user queries.</p>
+        <p><strong>Komponent 3: Klient (Python SDK)</strong><br>
+        Używa <code>azure-ai-projects</code> SDK v2 do tworzenia agentów, zarządzania konwersacjami i wywoływania agenta z zapytaniami użytkownika.</p>
 
         <div style="text-align:center; margin: 2rem 0;">
-            <img src="diagrams/architecture.svg" alt="Architecture Overview: Client → Microsoft Foundry → Azure Functions MCP Server" style="max-width:100%; height:auto; border-radius:8px; box-shadow:0 2px 12px rgba(0,0,0,0.1);">
+            <img src="diagrams/architecture.svg" alt="Przegląd architektury: Klient → Microsoft Foundry → Azure Functions (serwer MCP)" style="max-width:100%; height:auto; border-radius:8px; box-shadow:0 2px 12px rgba(0,0,0,0.1);">
         </div>
 
-        <p>And here's the request flow showing exactly what happens when a user asks <em>"Compare Lewandowski and Mbappé"</em>:</p>
+        <p>A oto przepływ żądania pokazujący dokładnie co się dzieje, gdy użytkownik pyta <em>„Porównaj Lewandowskiego i Mbappé"</em>:</p>
 
         <div style="text-align:center; margin: 2rem 0;">
-            <img src="diagrams/request-flow.svg" alt="Request Flow: 7-step sequence diagram showing how a comparison query flows through the system" style="max-width:100%; height:auto; border-radius:8px; box-shadow:0 2px 12px rgba(0,0,0,0.1);">
+            <img src="diagrams/request-flow.svg" alt="Przepływ żądania: 7-etapowy diagram sekwencji pokazujący, jak zapytanie o porównanie przechodzi przez system" style="max-width:100%; height:auto; border-radius:8px; box-shadow:0 2px 12px rgba(0,0,0,0.1);">
         </div>
 
-        <h2 id="prerequisites">Prerequisites</h2>
+        <h2 id="prerequisites">Wymagania wstępne</h2>
         <ul>
-            <li><strong>Azure subscription</strong> (free trial is fine)</li>
-            <li><strong>Azure CLI</strong> installed locally</li>
-            <li><strong>Python 3.10+</strong> and pip</li>
-            <li><strong>GitHub account</strong> (for cloning samples, optional)</li>
-            <li>Basic familiarity with Python and command line</li>
+            <li><strong>Subskrypcja Azure</strong> (wersja próbna wystarczy)</li>
+            <li><strong>Azure CLI</strong> zainstalowane lokalnie</li>
+            <li><strong>Python 3.10+</strong> i pip</li>
+            <li><strong>Konto GitHub</strong> (do klonowania przykładów, opcjonalnie)</li>
+            <li>Podstawowa znajomość Pythona i wiersza poleceń</li>
         </ul>
 
-        <h2 id="step-1">Step 1: Create Azure Resources</h2>
-        <p>We'll create a resource group, Foundry workspace, and Function App using the Azure CLI.</p>
+        <h2 id="step-1">Krok 1: Tworzenie zasobów Azure</h2>
+        <p>Stworzymy grupę zasobów, workspace Foundry i Function App za pomocą Azure CLI.</p>
 
-        <h3>Create the Resource Group</h3>
+        <h3>Tworzenie grupy zasobów</h3>
         <pre><code>az group create \
   --name rg-foundry-mcp-tutorial \
   --location eastus</code></pre>
 
-        <h3>Create a Foundry Workspace</h3>
+        <h3>Tworzenie workspace Foundry</h3>
         <pre><code>az cognitiveservices account create \
   --resource-group rg-foundry-mcp-tutorial \
   --name foundry-mcp-tutorial \
@@ -496,10 +521,10 @@
   --location eastus \
   --yes</code></pre>
 
-        <h3>Create a Foundry Project</h3>
-        <p>Visit the <a href="https://ai.azure.com/" target="_blank">Azure AI Foundry portal</a>, log in, and create a new project named <code>mcp-football-agent</code>. Then deploy the <code>gpt-5-mini</code> model to your project.</p>
+        <h3>Tworzenie projektu Foundry</h3>
+        <p>Wejdź na portal <a href="https://ai.azure.com/" target="_blank">Azure AI Foundry</a>, zaloguj się i utwórz nowy projekt o nazwie <code>mcp-football-agent</code>. Następnie wdróż model <code>gpt-5-mini</code> do swojego projektu.</p>
 
-        <h3>Create the Function App</h3>
+        <h3>Tworzenie Function App</h3>
         <pre><code>az storage account create \
   --resource-group rg-foundry-mcp-tutorial \
   --name stmcpfootball01 \
@@ -516,28 +541,28 @@ az functionapp create \
   --storage-account stmcpfootball01</code></pre>
 
         <div class="callout callout-note">
-            <div class="callout-title">Note: Consumption Plan</div>
-            <p>The Consumption plan scales automatically and you pay only for executions. Perfect for development and low-traffic scenarios.</p>
+            <div class="callout-title">Uwaga: Plan Consumption</div>
+            <p>Plan Consumption skaluje się automatycznie i płacisz tylko za wykonania. Idealny do developmentu i scenariuszy z niewielkim ruchem.</p>
         </div>
 
-        <h2 id="step-2">Step 2: Build the MCP Server</h2>
-        <p>Now we'll write the Python code for our MCP server. Create a local directory and set up your function app.</p>
+        <h2 id="step-2">Krok 2: Budowa serwera MCP</h2>
+        <p>Teraz napiszemy kod Pythona dla naszego serwera MCP. Utwórz lokalny katalog i skonfiguruj function app.</p>
 
-        <h3>Initialize the Function App Locally</h3>
+        <h3>Inicjalizacja Function App lokalnie</h3>
         <pre><code>func init football-mcp-server --python
 cd football-mcp-server
 func new --name football_stats --template "HTTP trigger"</code></pre>
 
-        <h3>Install Dependencies</h3>
-        <p>Create <code>requirements.txt</code>:</p>
+        <h3>Instalacja zależności</h3>
+        <p>Utwórz plik <code>requirements.txt</code>:</p>
         <pre><code>azure-functions==1.25.0b3</code></pre>
 
-        <p>Install them:</p>
+        <p>Zainstaluj zależności:</p>
         <pre><code>pip install -r requirements.txt</code></pre>
 
-        <h3>Create function_app.py</h3>
-        <p>Replace the generated files with this complete implementation:</p>
-        <div class="callout"><strong>Note:</strong> The player statistics below are sample data for demonstration purposes. In a production scenario, you would connect to a real football data API.</div>
+        <h3>Tworzenie function_app.py</h3>
+        <p>Zastąp wygenerowane pliki poniższą implementacją:</p>
+        <div class="callout"><strong>Uwaga:</strong> Poniższe statystyki piłkarzy to dane przykładowe do celów demonstracyjnych. W scenariuszu produkcyjnym połączyłbyś się z prawdziwym API danych piłkarskich.</div>
         <pre><code>&quot;&quot;&quot;
 MCP Server for Football (Soccer) Statistics
 Deployed as Azure Functions with MCP extension bindings.
@@ -737,8 +762,8 @@ def compare_players(player1_name: str, player2_name: str) -&gt; str:
 
     return result</code></pre>
 
-        <h3>Create host.json</h3>
-        <p>Ensure your <code>host.json</code> includes the Preview extension bundle for MCP support:</p>
+        <h3>Tworzenie host.json</h3>
+        <p>Upewnij się, że Twój <code>host.json</code> zawiera Preview extension bundle zapewniający wsparcie MCP:</p>
         <pre><code>{
   &quot;version&quot;: &quot;2.0&quot;,
   &quot;logging&quot;: {
@@ -756,63 +781,63 @@ def compare_players(player1_name: str, player2_name: str) -&gt; str:
 }</code></pre>
 
         <div class="callout callout-warning">
-            <div class="callout-title">Important: Extension Bundle Version</div>
-            <p>The MCP tool trigger requires the Preview extension bundle. Using the standard bundle will not include MCP support.</p>
+            <div class="callout-title">Ważne: Wersja Extension Bundle</div>
+            <p>MCP tool trigger wymaga Preview extension bundle. Użycie standardowego bundle nie zapewni wsparcia MCP.</p>
         </div>
 
-        <h2 id="step-3">Step 3: Deploy to Azure Functions</h2>
-        <p>Now we'll package and deploy your function app to Azure.</p>
+        <h2 id="step-3">Krok 3: Wdrożenie na Azure Functions</h2>
+        <p>Teraz spakujemy i wdrożymy function app na Azure.</p>
 
-        <h3>Deploy via ZIP</h3>
+        <h3>Wdrożenie przez ZIP</h3>
         <pre><code>func azure functionapp publish func-mcp-football --build remote</code></pre>
 
-        <p>This command uploads your code and builds it in Azure. The process takes 2-3 minutes.</p>
+        <p>To polecenie przesyła Twój kod i buduje go w Azure. Proces trwa 2-3 minuty.</p>
 
-        <h3>Verify the Deployment</h3>
-        <p>Check that your functions were deployed:</p>
+        <h3>Weryfikacja wdrożenia</h3>
+        <p>Sprawdź, czy Twoje funkcje zostały wdrożone:</p>
         <pre><code>az functionapp function list \
   --resource-group rg-foundry-mcp-tutorial \
   --name func-mcp-football</code></pre>
 
-        <p>You should see three functions: <code>search_players</code>, <code>get_player_stats</code>, and <code>compare_players</code>, all with the <code>mcpToolTrigger</code> binding.</p>
+        <p>Powinieneś zobaczyć trzy funkcje: <code>search_players</code>, <code>get_player_stats</code> i <code>compare_players</code>, wszystkie z bindingiem <code>mcpToolTrigger</code>.</p>
 
-        <h3>Get Your Function URL and Key</h3>
+        <h3>Pobieranie URL i klucza funkcji</h3>
         <pre><code>az functionapp keys list \
   --resource-group rg-foundry-mcp-tutorial \
   --name func-mcp-football \
   --query "functionKeys"</code></pre>
 
-        <p>The MCP endpoint is available at:</p>
+        <p>Endpoint MCP jest dostępny pod adresem:</p>
         <pre><code>https://func-mcp-football.azurewebsites.net/runtime/webhooks/mcp</code></pre>
 
-        <p>Save your function key—you'll need it to authenticate the MCP client in the next step.</p>
+        <p>Zapisz klucz funkcji — będzie potrzebny do uwierzytelnienia klienta MCP w następnym kroku.</p>
 
-        <h3>Test the MCP Endpoint</h3>
+        <h3>Testowanie endpointu MCP</h3>
         <pre><code>curl -X POST https://func-mcp-football.azurewebsites.net/runtime/webhooks/mcp \
   -H "x-functions-key: YOUR_KEY_HERE" \
   -H "Content-Type: application/json" \
   -d '{"action": "list_tools"}'</code></pre>
 
-        <p>This should return the list of available MCP tools (search_players, get_player_stats, compare_players).</p>
+        <p>Powinno to zwrócić listę dostępnych narzędzi MCP (search_players, get_player_stats, compare_players).</p>
 
         <div class="screenshot-wrapper">
-            <img src="images/azure-functions-overview.png" alt="Azure Functions app overview showing func-mcp-football with Running status, East US location, and Linux OS">
-            <div class="caption">Azure Functions app overview — func-mcp-football running on Linux Consumption plan</div>
+            <img src="images/azure-functions-overview.png" alt="Przegląd Azure Functions app z func-mcp-football w statusie Running, lokalizacja East US, system Linux">
+            <div class="caption">Przegląd Azure Functions — func-mcp-football działający na planie Consumption (Linux)</div>
         </div>
 
         <div class="screenshot-wrapper">
-            <img src="images/functions-list.png" alt="Functions list showing 3 MCP tools: compare_players, get_player_stats, search_players — all with mcpToolTrigger binding">
-            <div class="caption">All three MCP tools registered with mcpToolTrigger bindings</div>
+            <img src="images/functions-list.png" alt="Lista funkcji pokazująca 3 narzędzia MCP: compare_players, get_player_stats, search_players z bindingiem mcpToolTrigger">
+            <div class="caption">Wszystkie trzy narzędzia MCP zarejestrowane z bindingami mcpToolTrigger</div>
         </div>
 
-        <h2 id="step-4">Step 4: Create the Foundry Agent</h2>
-        <p>Now we'll write a Python script that creates a Foundry Agent and connects it to your MCP server.</p>
+        <h2 id="step-4">Krok 4: Tworzenie Agenta Foundry</h2>
+        <p>Teraz napiszemy skrypt Pythona, który tworzy Agenta Foundry i łączy go z Twoim serwerem MCP.</p>
 
-        <h3>Install the SDK</h3>
+        <h3>Instalacja SDK</h3>
         <pre><code>pip install azure-ai-projects==2.0.1</code></pre>
 
-        <h3>Create create_agent.py</h3>
-        <p>This script creates the agent, configures the MCP tool, and demonstrates the conversation API:</p>
+        <h3>Tworzenie create_agent.py</h3>
+        <p>Ten skrypt tworzy agenta, konfiguruje narzędzie MCP i demonstruje API konwersacji:</p>
         <pre><code>import os
 from azure.identity import DefaultAzureCredential
 from azure.ai.projects import AIProjectClient
@@ -886,26 +911,26 @@ response = openai_client.responses.create(
 
 print(response.output_text)</code></pre>
 
-        <h3>Set Environment Variable</h3>
+        <h3>Ustawienie zmiennej środowiskowej</h3>
         <pre><code>export MCP_SERVER_KEY="your-function-key-here"</code></pre>
 
-        <h3>Run the Agent Creation Script</h3>
+        <h3>Uruchomienie skryptu tworzenia agenta</h3>
         <pre><code>python create_agent.py</code></pre>
 
-        <p>The script will create the agent and demonstrate its first query.</p>
+        <p>Skrypt utworzy agenta i zademonstruje jego pierwsze zapytanie.</p>
 
         <div class="screenshot-wrapper">
-            <img src="images/foundry-project.png" alt="Azure AI Foundry portal showing mcp-football-agent project with gpt-5-mini deployed">
-            <div class="caption">Foundry project dashboard — mcp-football-agent with gpt-5-mini deployment</div>
+            <img src="images/foundry-project.png" alt="Portal Azure AI Foundry pokazujący projekt mcp-football-agent z wdrożonym gpt-5-mini">
+            <div class="caption">Dashboard projektu Foundry — mcp-football-agent z wdrożeniem gpt-5-mini</div>
         </div>
 
-        <h2 id="step-5">Step 5: Test the Agent</h2>
-        <p>Let's test the agent with three different queries to showcase its capabilities.</p>
+        <h2 id="step-5">Krok 5: Testowanie Agenta</h2>
+        <p>Przetestujmy agenta trzema różnymi zapytaniami, aby zaprezentować jego możliwości.</p>
 
-        <h3>Test Query 1: Search Polish Players</h3>
-        <p><strong>Input:</strong> "Who are the Polish players?"</p>
-        <p><strong>Agent Action:</strong> Calls <code>search_players("Poland")</code></p>
-        <p><strong>Output:</strong></p>
+        <h3>Zapytanie testowe 1: Wyszukiwanie polskich zawodników</h3>
+        <p><strong>Wejście:</strong> „Who are the Polish players?"</p>
+        <p><strong>Akcja agenta:</strong> Wywołuje <code>search_players("Poland")</code></p>
+        <p><strong>Wynik:</strong></p>
         <pre><code>Found 2 player(s) matching 'Poland':
 
 - Robert Lewandowski (Poland) - Striker at FC Barcelona
@@ -915,10 +940,10 @@ Both players represent Polish football excellence at the highest level.
 Lewandowski is one of the world's most prolific strikers with 672 career
 goals, while Szczęsny provides defensive stability as a goalkeeper.</code></pre>
 
-        <h3>Test Query 2: Get Detailed Player Stats</h3>
-        <p><strong>Input:</strong> "Get me detailed stats for Haaland"</p>
-        <p><strong>Agent Action:</strong> Calls <code>get_player_stats("Haaland")</code></p>
-        <p><strong>Output:</strong></p>
+        <h3>Zapytanie testowe 2: Szczegółowe statystyki zawodnika</h3>
+        <p><strong>Wejście:</strong> „Get me detailed stats for Haaland"</p>
+        <p><strong>Akcja agenta:</strong> Wywołuje <code>get_player_stats("Haaland")</code></p>
+        <p><strong>Wynik:</strong></p>
         <pre><code>Erling Haaland - Striker
 Club: Manchester City | Age: 25 | Nationality: Norway
 
@@ -939,10 +964,10 @@ Haaland's 0.94 goals per 90 minutes demonstrates elite finishing ability,
 ranking among the best strikers globally. His shot accuracy of 61.2% shows
 clinical efficiency.</code></pre>
 
-        <h3>Test Query 3: Compare Two Players</h3>
-        <p><strong>Input:</strong> "Compare Lewandowski and Mbappé"</p>
-        <p><strong>Agent Action:</strong> Calls <code>compare_players("Lewandowski", "Mbappé")</code></p>
-        <p><strong>Output:</strong></p>
+        <h3>Zapytanie testowe 3: Porównanie dwóch zawodników</h3>
+        <p><strong>Wejście:</strong> „Compare Lewandowski and Mbappé"</p>
+        <p><strong>Akcja agenta:</strong> Wywołuje <code>compare_players("Lewandowski", "Mbappé")</code></p>
+        <p><strong>Wynik:</strong></p>
         <pre><code>Comparison: Robert Lewandowski vs Kylian Mbappé
 
 Metric                    Robert Lewandowski       Kylian Mbappé
@@ -961,101 +986,101 @@ slightly higher efficiency, while Lewandowski's career record demonstrates
 sustained excellence over a decade.</code></pre>
 
         <div class="screenshot-wrapper">
-            <img src="images/agent-output.png" alt="Terminal output showing agent test: Polish player search, Haaland stats, and Lewandowski vs Mbappé comparison">
-            <div class="caption">Agent test output — three queries demonstrating search, stats, and comparison tools</div>
+            <img src="images/agent-output.png" alt="Wyjście terminala pokazujące test agenta: wyszukiwanie polskich graczy, statystyki Haalanda i porównanie Lewandowski vs Mbappé">
+            <div class="caption">Wyjście testowe agenta — trzy zapytania demonstrujące wyszukiwanie, statystyki i porównanie</div>
         </div>
 
-        <h2 id="takeaways">Key Takeaways</h2>
+        <h2 id="takeaways">Najważniejsze wnioski</h2>
         <ul>
-            <li><strong>MCP is universal:</strong> Once you write an MCP server, any MCP-compatible model (OpenAI, Anthropic, Google, etc.) can use your tools without code changes.</li>
-            <li><strong>Azure Functions simplify hosting:</strong> The MCP extension turns Python decorators into production-ready MCP tools with scaling, monitoring, and authentication built in.</li>
-            <li><strong>Natural language interfaces are powerful:</strong> Users don't need to learn API docs or SQL—they ask questions, and the AI agent figures out which tools to call.</li>
-            <li><strong>Conversations API is clean:</strong> The new <code>azure-ai-projects</code> v2 SDK makes creating and managing agent conversations straightforward, with clear separation between agent definitions and runtime interactions.</li>
-            <li><strong>Tool discovery is automatic:</strong> Your MCP tools are automatically published to Foundry, making them available immediately to any agent in your workspace.</li>
+            <li><strong>MCP jest uniwersalny:</strong> Gdy napiszesz serwer MCP, każdy model kompatybilny z MCP (OpenAI, Anthropic, Google itp.) może korzystać z Twoich narzędzi bez zmian w kodzie.</li>
+            <li><strong>Azure Functions upraszcza hosting:</strong> Rozszerzenie MCP zamienia dekoratory Pythona w gotowe do produkcji narzędzia MCP ze skalowaniem, monitoringiem i uwierzytelnianiem wbudowanym.</li>
+            <li><strong>Interfejsy w języku naturalnym są potężne:</strong> Użytkownicy nie muszą uczyć się dokumentacji API ani SQL — zadają pytania, a agent AI sam decyduje, które narzędzia wywołać.</li>
+            <li><strong>Conversations API jest przejrzyste:</strong> Nowe SDK <code>azure-ai-projects</code> v2 sprawia, że tworzenie i zarządzanie konwersacjami agenta jest proste, z jasnym podziałem między definicjami agentów a interakcjami w runtime.</li>
+            <li><strong>Odkrywanie narzędzi jest automatyczne:</strong> Twoje narzędzia MCP są automatycznie publikowane w Foundry, udostępniając je natychmiast każdemu agentowi w Twoim workspace.</li>
         </ul>
 
         <div class="callout callout-tip">
-            <div class="callout-title">Pro Tip: Iterating Quickly</div>
-            <p>During development, use <code>func start</code> to run Functions locally, then point your agent at <code>http://localhost:7071/runtime/webhooks/mcp</code>. No deployment needed for rapid iteration.</p>
+            <div class="callout-title">Pro Tip: Szybkie iteracje</div>
+            <p>Podczas developmentu użyj <code>func start</code> do uruchomienia Functions lokalnie, a następnie skieruj agenta na <code>http://localhost:7071/runtime/webhooks/mcp</code>. Żadne wdrożenie nie jest potrzebne do szybkiego iterowania.</p>
         </div>
 
-        <h2 id="next-steps">Next Steps</h2>
-        <p>You've built the foundation. Here are ways to extend this system:</p>
+        <h2 id="next-steps">Dalsze kroki</h2>
+        <p>Zbudowałeś fundament. Oto sposoby na rozbudowę systemu:</p>
 
-        <h3>1. Integrate a Real Football API</h3>
-        <p>Replace the in-memory <code>PLAYERS</code> database with live data from <a href="https://www.football-data.org/" target="_blank">football-data.org</a>. Your functions will automatically query live stats without changes to the agent.</p>
+        <h3>1. Integracja z prawdziwym API piłkarskim</h3>
+        <p>Zastąp bazę <code>PLAYERS</code> w pamięci danymi na żywo z <a href="https://www.football-data.org/" target="_blank">football-data.org</a>. Twoje funkcje będą automatycznie odpytywać aktualne statystyki bez zmian w agencie.</p>
 
-        <h3>2. Add More Tools</h3>
-        <p>Extend the MCP server with additional functions:</p>
+        <h3>2. Dodanie kolejnych narzędzi</h3>
+        <p>Rozszerz serwer MCP o dodatkowe funkcje:</p>
         <ul>
-            <li><code>get_team_stats</code> - Retrieve team information and standings</li>
-            <li><code>get_match_predictions</code> - Use ML models to predict match outcomes</li>
-            <li><code>get_injury_news</code> - Query latest injury reports</li>
-            <li><code>analyze_tactical_formation</code> - Suggest optimal team formations</li>
+            <li><code>get_team_stats</code> — pobieranie informacji o drużynie i tabeli</li>
+            <li><code>get_match_predictions</code> — przewidywanie wyników meczów za pomocą modeli ML</li>
+            <li><code>get_injury_news</code> — pobieranie najnowszych raportów o kontuzjach</li>
+            <li><code>analyze_tactical_formation</code> — sugerowanie optymalnych formacji</li>
         </ul>
 
-        <h3>3. Deploy as a Teams Bot</h3>
-        <p>Wrap your agent in a Teams bot using the <a href="https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/identity" target="_blank">Teams SDK</a>. Bring football analytics directly into your organization's chat.</p>
+        <h3>3. Wdrożenie jako bot Teams</h3>
+        <p>Opakuj agenta w bota Teams za pomocą <a href="https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/identity" target="_blank">Teams SDK</a>. Wprowadź analitykę piłkarską bezpośrednio do czatu Twojej organizacji.</p>
 
-        <h3>4. Add an Approval Workflow</h3>
-        <p>Change <code>require_approval="never"</code> to <code>require_approval="always"</code> for sensitive operations. The agent will request approval before executing certain tools.</p>
+        <h3>4. Dodanie workflow zatwierdzania</h3>
+        <p>Zmień <code>require_approval="never"</code> na <code>require_approval="always"</code> dla wrażliwych operacji. Agent będzie prosił o zatwierdzenie przed wykonaniem wybranych narzędzi.</p>
 
-        <h3>5. Implement Caching</h3>
-        <p>Add Redis caching to your Azure Functions to avoid redundant API calls and speed up repeated queries.</p>
+        <h3>5. Implementacja cache'owania</h3>
+        <p>Dodaj cache Redis do swoich Azure Functions, aby unikać zbędnych wywołań API i przyspieszyć powtarzające się zapytania.</p>
 
-        <h3>6. Build a Web Interface</h3>
-        <p>Create a React or Next.js frontend that communicates with your Foundry Agent. Users get a polished UI while the AI handles complexity under the hood.</p>
+        <h3>6. Budowa interfejsu webowego</h3>
+        <p>Stwórz frontend w React lub Next.js komunikujący się z Twoim Agentem Foundry. Użytkownicy dostaną dopracowany UI, podczas gdy AI obsługuje złożoność pod maską.</p>
 
         <div class="callout callout-note">
-            <div class="callout-title">Production Ready</div>
-            <p>This tutorial covers the core pattern. For production, add monitoring with Application Insights, implement authentication via Azure AD, use managed identities instead of function keys, and enable Backup & Disaster Recovery.</p>
+            <div class="callout-title">Gotowość produkcyjna</div>
+            <p>Ten poradnik obejmuje podstawowy wzorzec. Na produkcji dodaj monitoring z Application Insights, zaimplementuj uwierzytelnianie przez Azure AD, użyj managed identities zamiast kluczy funkcji i włącz Backup &amp; Disaster Recovery.</p>
         </div>
 
-        <!-- REFERENCES -->
+        <!-- REFERENCJE -->
         <section class="references">
-            <h2>References &amp; Further Reading</h2>
+            <h2>Referencje i dalsze materiały</h2>
             <ol>
                 <li>
                     <a href="https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-mcp-tool-trigger" target="_blank">MCP tool trigger for Azure Functions</a>
                     <span class="source-type">Microsoft Learn</span>
-                    <div class="source-desc">Official documentation on creating MCP tool triggers in Azure Functions.</div>
+                    <div class="source-desc">Oficjalna dokumentacja tworzenia MCP tool triggers w Azure Functions.</div>
                 </li>
                 <li>
                     <a href="https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-mcp" target="_blank">Model context protocol bindings for Azure Functions</a>
                     <span class="source-type">Microsoft Learn</span>
-                    <div class="source-desc">Complete reference for MCP bindings, configuration, and best practices.</div>
+                    <div class="source-desc">Kompletna dokumentacja bindingów MCP, konfiguracji i najlepszych praktyk.</div>
                 </li>
                 <li>
                     <a href="https://github.com/Azure/azure-functions-mcp-extension" target="_blank">Azure Functions MCP Extension GitHub</a>
                     <span class="source-type">GitHub</span>
-                    <div class="source-desc">Source code and examples for the Azure Functions MCP extension.</div>
+                    <div class="source-desc">Kod źródłowy i przykłady rozszerzenia MCP dla Azure Functions.</div>
                 </li>
                 <li>
                     <a href="https://github.com/Azure-Samples/remote-mcp-functions-python" target="_blank">Remote MCP Functions Python Sample</a>
                     <span class="source-type">GitHub Sample</span>
-                    <div class="source-desc">Complete end-to-end Python sample deploying MCP servers to Azure Functions.</div>
+                    <div class="source-desc">Kompletny przykład end-to-end w Pythonie z wdrożeniem serwerów MCP na Azure Functions.</div>
                 </li>
                 <li>
                     <a href="https://learn.microsoft.com/en-us/python/api/overview/azure/ai-projects-readme" target="_blank">Azure AI Projects SDK v2</a>
                     <span class="source-type">Microsoft Learn</span>
-                    <div class="source-desc">Python SDK documentation for creating and managing Foundry agents.</div>
+                    <div class="source-desc">Dokumentacja Python SDK do tworzenia i zarządzania agentami Foundry.</div>
                 </li>
                 <li>
                     <a href="https://modelcontextprotocol.io/" target="_blank">Model Context Protocol</a>
-                    <span class="source-type">Official Site</span>
-                    <div class="source-desc">Official MCP specification and design documentation.</div>
+                    <span class="source-type">Oficjalna strona</span>
+                    <div class="source-desc">Oficjalna specyfikacja i dokumentacja projektowa MCP.</div>
                 </li>
                 <li>
                     <a href="https://techcommunity.microsoft.com/blog/appsonazureblog/building-mcp-apps-with-azure-functions-mcp-extension/4496536" target="_blank">Building MCP Apps with Azure Functions</a>
                     <span class="source-type">Microsoft Tech Community</span>
-                    <div class="source-desc">Deep dive on MCP extension architecture, patterns, and real-world examples.</div>
+                    <div class="source-desc">Szczegółowe omówienie architektury rozszerzenia MCP, wzorców i przykładów z praktyki.</div>
                 </li>
             </ol>
         </section>
 
         <!-- FOOTER -->
         <footer class="article-footer">
-            <p>Written by Maciej Rubczyński on March 16, 2026</p>
+            <p>Napisał Maciej Rubczyński, 16 marca 2026</p>
             <div class="tags">
                 <span class="tag">Azure Functions</span>
                 <span class="tag">MCP</span>
@@ -1063,7 +1088,7 @@ sustained excellence over a decade.</code></pre>
                 <span class="tag">Microsoft Foundry</span>
                 <span class="tag">AI Agents</span>
                 <span class="tag">Python</span>
-                <span class="tag">Football</span>
+                <span class="tag">Piłka nożna</span>
                 <span class="tag">gpt-5-mini</span>
             </div>
         </footer>
